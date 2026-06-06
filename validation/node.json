@@ -1,0 +1,23 @@
+{
+  "street": "flop",
+  "hero_hole": [
+    "6s",
+    "6d"
+  ],
+  "board": [
+    "Ah",
+    "6h",
+    "Qs"
+  ],
+  "pot_before": 7440,
+  "to_call": 1440,
+  "eff_stack": 8683,
+  "villain_range_key": "balanced",
+  "bb": 300,
+  "candidate_actions": [
+    "fold",
+    "call",
+    "raise"
+  ],
+  "contract": "n8_review.solver_node.v1"
+}

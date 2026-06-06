@@ -1,0 +1,1947 @@
+{
+  "schema": "0.1",
+  "hands": [
+    {
+      "hand_id": "TM6030071921",
+      "tournament": {
+        "tid": "287580360",
+        "name": "Bounty Hunters Special $10.80 Hold'em No Limit",
+        "buyin": "$10.80",
+        "level": 6,
+        "sb": 150,
+        "bb": 300,
+        "ante": 45,
+        "ts": "2026-06-02T18:50:00"
+      },
+      "table": "105",
+      "max_seats": 8,
+      "button_seat": 8,
+      "seats": [
+        {
+          "seat": 1,
+          "player": "4b49ee9d",
+          "stack": 14135,
+          "is_hero": false
+        },
+        {
+          "seat": 2,
+          "player": "dcb4b332",
+          "stack": 14351,
+          "is_hero": false
+        },
+        {
+          "seat": 3,
+          "player": "e49622c3",
+          "stack": 12987,
+          "is_hero": false
+        },
+        {
+          "seat": 4,
+          "player": "c3644098",
+          "stack": 31345,
+          "is_hero": false
+        },
+        {
+          "seat": 5,
+          "player": "Hero",
+          "stack": 8683,
+          "is_hero": true
+        },
+        {
+          "seat": 6,
+          "player": "b738995b",
+          "stack": 17853,
+          "is_hero": false
+        },
+        {
+          "seat": 7,
+          "player": "f65476a4",
+          "stack": 20322,
+          "is_hero": false
+        },
+        {
+          "seat": 8,
+          "player": "300a78cd",
+          "stack": 15140,
+          "is_hero": false
+        }
+      ],
+      "hero": "Hero",
+      "hero_hole": [
+        {
+          "rank": "6",
+          "suit": "s"
+        },
+        {
+          "rank": "6",
+          "suit": "d"
+        }
+      ],
+      "streets": [
+        {
+          "street": "preflop",
+          "board": [],
+          "actions": [
+            {
+              "player": "Hero",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "small_blind",
+              "amount": 150,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "big_blind",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "raise",
+              "amount": 300,
+              "to_amount": 600,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "call",
+              "amount": 450,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "call",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "flop",
+          "board": [
+            {
+              "rank": "A",
+              "suit": "h"
+            },
+            {
+              "rank": "6",
+              "suit": "h"
+            },
+            {
+              "rank": "Q",
+              "suit": "s"
+            }
+          ],
+          "actions": [
+            {
+              "player": "4b49ee9d",
+              "type": "check",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "check",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "bet",
+              "amount": 1440,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "call",
+              "amount": 1440,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "raise",
+              "amount": 1860,
+              "to_amount": 3300,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "call",
+              "amount": 1860,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "turn",
+          "board": [
+            {
+              "rank": "A",
+              "suit": "h"
+            },
+            {
+              "rank": "6",
+              "suit": "h"
+            },
+            {
+              "rank": "Q",
+              "suit": "s"
+            },
+            {
+              "rank": "7",
+              "suit": "d"
+            }
+          ],
+          "actions": [
+            {
+              "player": "e49622c3",
+              "type": "check",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "bet",
+              "amount": 4738,
+              "to_amount": 0,
+              "all_in": true
+            },
+            {
+              "player": "e49622c3",
+              "type": "call",
+              "amount": 4738,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "show",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "show",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "river",
+          "board": [
+            {
+              "rank": "A",
+              "suit": "h"
+            },
+            {
+              "rank": "6",
+              "suit": "h"
+            },
+            {
+              "rank": "Q",
+              "suit": "s"
+            },
+            {
+              "rank": "7",
+              "suit": "d"
+            },
+            {
+              "rank": "T",
+              "suit": "c"
+            }
+          ],
+          "actions": []
+        },
+        {
+          "street": "showdown",
+          "board": [],
+          "actions": [
+            {
+              "player": "e49622c3",
+              "type": "collect",
+              "amount": 22076,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        }
+      ],
+      "final_board": [
+        {
+          "rank": "A",
+          "suit": "h"
+        },
+        {
+          "rank": "6",
+          "suit": "h"
+        },
+        {
+          "rank": "Q",
+          "suit": "s"
+        },
+        {
+          "rank": "7",
+          "suit": "d"
+        },
+        {
+          "rank": "T",
+          "suit": "c"
+        }
+      ],
+      "showdowns": [
+        {
+          "player": "e49622c3",
+          "hole": [
+            {
+              "rank": "A",
+              "suit": "s"
+            },
+            {
+              "rank": "A",
+              "suit": "c"
+            }
+          ],
+          "won": 22076,
+          "hand_rank_text": "three of a kind, Aces",
+          "mucked": false
+        },
+        {
+          "player": "Hero",
+          "hole": [
+            {
+              "rank": "6",
+              "suit": "s"
+            },
+            {
+              "rank": "6",
+              "suit": "d"
+            }
+          ],
+          "won": 0,
+          "hand_rank_text": "three of a kind, Sixes",
+          "mucked": false
+        }
+      ],
+      "total_pot": 22076,
+      "raw_unparsed": []
+    },
+    {
+      "hand_id": "TM6030071913",
+      "tournament": {
+        "tid": "287580360",
+        "name": "Bounty Hunters Special $10.80 Hold'em No Limit",
+        "buyin": "$10.80",
+        "level": 6,
+        "sb": 150,
+        "bb": 300,
+        "ante": 45,
+        "ts": "2026-06-02T18:49:13"
+      },
+      "table": "105",
+      "max_seats": 8,
+      "button_seat": 7,
+      "seats": [
+        {
+          "seat": 1,
+          "player": "4b49ee9d",
+          "stack": 11420,
+          "is_hero": false
+        },
+        {
+          "seat": 2,
+          "player": "dcb4b332",
+          "stack": 14396,
+          "is_hero": false
+        },
+        {
+          "seat": 3,
+          "player": "e49622c3",
+          "stack": 13032,
+          "is_hero": false
+        },
+        {
+          "seat": 4,
+          "player": "c3644098",
+          "stack": 31390,
+          "is_hero": false
+        },
+        {
+          "seat": 5,
+          "player": "Hero",
+          "stack": 8728,
+          "is_hero": true
+        },
+        {
+          "seat": 6,
+          "player": "b738995b",
+          "stack": 20148,
+          "is_hero": false
+        },
+        {
+          "seat": 7,
+          "player": "f65476a4",
+          "stack": 20367,
+          "is_hero": false
+        },
+        {
+          "seat": 8,
+          "player": "300a78cd",
+          "stack": 15335,
+          "is_hero": false
+        }
+      ],
+      "hero": "Hero",
+      "hero_hole": [
+        {
+          "rank": "3",
+          "suit": "s"
+        },
+        {
+          "rank": "Q",
+          "suit": "d"
+        }
+      ],
+      "streets": [
+        {
+          "street": "preflop",
+          "board": [],
+          "actions": [
+            {
+              "player": "Hero",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "small_blind",
+              "amount": 150,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "big_blind",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "raise",
+              "amount": 300,
+              "to_amount": 600,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "call",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "flop",
+          "board": [
+            {
+              "rank": "9",
+              "suit": "h"
+            },
+            {
+              "rank": "6",
+              "suit": "c"
+            },
+            {
+              "rank": "8",
+              "suit": "s"
+            }
+          ],
+          "actions": [
+            {
+              "player": "4b49ee9d",
+              "type": "bet",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "turn",
+          "board": [
+            {
+              "rank": "9",
+              "suit": "h"
+            },
+            {
+              "rank": "6",
+              "suit": "c"
+            },
+            {
+              "rank": "8",
+              "suit": "s"
+            },
+            {
+              "rank": "T",
+              "suit": "h"
+            }
+          ],
+          "actions": [
+            {
+              "player": "4b49ee9d",
+              "type": "check",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "bet",
+              "amount": 1050,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "raise",
+              "amount": 9125,
+              "to_amount": 10175,
+              "all_in": true
+            },
+            {
+              "player": "b738995b",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "uncalled",
+              "amount": 9125,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "showdown",
+          "board": [],
+          "actions": [
+            {
+              "player": "4b49ee9d",
+              "type": "collect",
+              "amount": 5010,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        }
+      ],
+      "final_board": [
+        {
+          "rank": "9",
+          "suit": "h"
+        },
+        {
+          "rank": "6",
+          "suit": "c"
+        },
+        {
+          "rank": "8",
+          "suit": "s"
+        },
+        {
+          "rank": "T",
+          "suit": "h"
+        }
+      ],
+      "showdowns": [],
+      "total_pot": 5010,
+      "raw_unparsed": []
+    },
+    {
+      "hand_id": "TM6030071899",
+      "tournament": {
+        "tid": "287580360",
+        "name": "Bounty Hunters Special $10.80 Hold'em No Limit",
+        "buyin": "$10.80",
+        "level": 6,
+        "sb": 150,
+        "bb": 300,
+        "ante": 45,
+        "ts": "2026-06-02T18:48:17"
+      },
+      "table": "105",
+      "max_seats": 8,
+      "button_seat": 6,
+      "seats": [
+        {
+          "seat": 1,
+          "player": "4b49ee9d",
+          "stack": 11465,
+          "is_hero": false
+        },
+        {
+          "seat": 2,
+          "player": "dcb4b332",
+          "stack": 14441,
+          "is_hero": false
+        },
+        {
+          "seat": 3,
+          "player": "e49622c3",
+          "stack": 13077,
+          "is_hero": false
+        },
+        {
+          "seat": 4,
+          "player": "c3644098",
+          "stack": 14960,
+          "is_hero": false
+        },
+        {
+          "seat": 5,
+          "player": "Hero",
+          "stack": 8773,
+          "is_hero": true
+        },
+        {
+          "seat": 6,
+          "player": "b738995b",
+          "stack": 20793,
+          "is_hero": false
+        },
+        {
+          "seat": 7,
+          "player": "f65476a4",
+          "stack": 21012,
+          "is_hero": false
+        },
+        {
+          "seat": 8,
+          "player": "300a78cd",
+          "stack": 30295,
+          "is_hero": false
+        }
+      ],
+      "hero": "Hero",
+      "hero_hole": [
+        {
+          "rank": "6",
+          "suit": "s"
+        },
+        {
+          "rank": "2",
+          "suit": "h"
+        }
+      ],
+      "streets": [
+        {
+          "street": "preflop",
+          "board": [],
+          "actions": [
+            {
+              "player": "Hero",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "small_blind",
+              "amount": 150,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "big_blind",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "raise",
+              "amount": 300,
+              "to_amount": 600,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "call",
+              "amount": 600,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "call",
+              "amount": 450,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "raise",
+              "amount": 2760,
+              "to_amount": 3360,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "raise",
+              "amount": 11555,
+              "to_amount": 14915,
+              "all_in": true
+            },
+            {
+              "player": "b738995b",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "call",
+              "amount": 11555,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "show",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "show",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "flop",
+          "board": [
+            {
+              "rank": "6",
+              "suit": "c"
+            },
+            {
+              "rank": "4",
+              "suit": "s"
+            },
+            {
+              "rank": "3",
+              "suit": "d"
+            }
+          ],
+          "actions": []
+        },
+        {
+          "street": "turn",
+          "board": [
+            {
+              "rank": "6",
+              "suit": "c"
+            },
+            {
+              "rank": "4",
+              "suit": "s"
+            },
+            {
+              "rank": "3",
+              "suit": "d"
+            },
+            {
+              "rank": "8",
+              "suit": "s"
+            }
+          ],
+          "actions": []
+        },
+        {
+          "street": "river",
+          "board": [
+            {
+              "rank": "6",
+              "suit": "c"
+            },
+            {
+              "rank": "4",
+              "suit": "s"
+            },
+            {
+              "rank": "3",
+              "suit": "d"
+            },
+            {
+              "rank": "8",
+              "suit": "s"
+            },
+            {
+              "rank": "8",
+              "suit": "c"
+            }
+          ],
+          "actions": []
+        },
+        {
+          "street": "showdown",
+          "board": [],
+          "actions": [
+            {
+              "player": "c3644098",
+              "type": "collect",
+              "amount": 31390,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        }
+      ],
+      "final_board": [
+        {
+          "rank": "6",
+          "suit": "c"
+        },
+        {
+          "rank": "4",
+          "suit": "s"
+        },
+        {
+          "rank": "3",
+          "suit": "d"
+        },
+        {
+          "rank": "8",
+          "suit": "s"
+        },
+        {
+          "rank": "8",
+          "suit": "c"
+        }
+      ],
+      "showdowns": [
+        {
+          "player": "c3644098",
+          "hole": [
+            {
+              "rank": "J",
+              "suit": "d"
+            },
+            {
+              "rank": "J",
+              "suit": "c"
+            }
+          ],
+          "won": 31390,
+          "hand_rank_text": "two pair, Jacks and Eights",
+          "mucked": false
+        },
+        {
+          "player": "300a78cd",
+          "hole": [
+            {
+              "rank": "K",
+              "suit": "c"
+            },
+            {
+              "rank": "A",
+              "suit": "s"
+            }
+          ],
+          "won": 0,
+          "hand_rank_text": "a pair of Eights",
+          "mucked": false
+        }
+      ],
+      "total_pot": 31390,
+      "raw_unparsed": []
+    },
+    {
+      "hand_id": "TM6030071883",
+      "tournament": {
+        "tid": "287580360",
+        "name": "Bounty Hunters Special $10.80 Hold'em No Limit",
+        "buyin": "$10.80",
+        "level": 6,
+        "sb": 150,
+        "bb": 300,
+        "ante": 45,
+        "ts": "2026-06-02T18:47:08"
+      },
+      "table": "105",
+      "max_seats": 8,
+      "button_seat": 5,
+      "seats": [
+        {
+          "seat": 1,
+          "player": "4b49ee9d",
+          "stack": 11510,
+          "is_hero": false
+        },
+        {
+          "seat": 2,
+          "player": "dcb4b332",
+          "stack": 14486,
+          "is_hero": false
+        },
+        {
+          "seat": 3,
+          "player": "e49622c3",
+          "stack": 15222,
+          "is_hero": false
+        },
+        {
+          "seat": 4,
+          "player": "c3644098",
+          "stack": 15005,
+          "is_hero": false
+        },
+        {
+          "seat": 5,
+          "player": "Hero",
+          "stack": 8818,
+          "is_hero": true
+        },
+        {
+          "seat": 6,
+          "player": "b738995b",
+          "stack": 18078,
+          "is_hero": false
+        },
+        {
+          "seat": 7,
+          "player": "f65476a4",
+          "stack": 21357,
+          "is_hero": false
+        },
+        {
+          "seat": 8,
+          "player": "300a78cd",
+          "stack": 30340,
+          "is_hero": false
+        }
+      ],
+      "hero": "Hero",
+      "hero_hole": [
+        {
+          "rank": "3",
+          "suit": "d"
+        },
+        {
+          "rank": "4",
+          "suit": "s"
+        }
+      ],
+      "streets": [
+        {
+          "street": "preflop",
+          "board": [],
+          "actions": [
+            {
+              "player": "Hero",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "ante",
+              "amount": 45,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "small_blind",
+              "amount": 150,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "big_blind",
+              "amount": 300,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "300a78cd",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "4b49ee9d",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "dcb4b332",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "raise",
+              "amount": 300,
+              "to_amount": 600,
+              "all_in": false
+            },
+            {
+              "player": "c3644098",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "Hero",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "raise",
+              "amount": 1500,
+              "to_amount": 2100,
+              "all_in": false
+            },
+            {
+              "player": "f65476a4",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "call",
+              "amount": 1500,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "flop",
+          "board": [
+            {
+              "rank": "A",
+              "suit": "d"
+            },
+            {
+              "rank": "5",
+              "suit": "d"
+            },
+            {
+              "rank": "5",
+              "suit": "s"
+            }
+          ],
+          "actions": [
+            {
+              "player": "b738995b",
+              "type": "bet",
+              "amount": 1650,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "e49622c3",
+              "type": "fold",
+              "amount": 0,
+              "to_amount": 0,
+              "all_in": false
+            },
+            {
+              "player": "b738995b",
+              "type": "uncalled",
+              "amount": 1650,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        },
+        {
+          "street": "showdown",
+          "board": [],
+          "actions": [
+            {
+              "player": "b738995b",
+              "type": "collect",
+              "amount": 4860,
+              "to_amount": 0,
+              "all_in": false
+            }
+          ]
+        }
+      ],
+      "final_board": [
+        {
+          "rank": "A",
+          "suit": "d"
+        },
+        {
+          "rank": "5",
+          "suit": "d"
+        },
+        {
+          "rank": "5",
+          "suit": "s"
+        }
+      ],
+      "showdowns": [],
+      "total_pot": 4860,
+      "raw_unparsed": []
+    }
+  ],
+  "hero_contexts": [
+    {
+      "hand_id": "TM6030071921",
+      "position": "MP",
+      "eff_stack_bb": 28.94333333333333,
+      "m_ratio": 10.719753086419754,
+      "preflop_role": "call",
+      "invested": 8683,
+      "net": -8683,
+      "saw_flop": true,
+      "saw_showdown": true,
+      "decisions": [
+        {
+          "street": "preflop",
+          "facing": "raise",
+          "villain": "e49622c3",
+          "pot_before": 2010,
+          "to_call": 600,
+          "hero_action": {
+            "player": "Hero",
+            "type": "call",
+            "amount": 600,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "pot_odds": 0.22988505747126436
+        },
+        {
+          "street": "flop",
+          "facing": "bet",
+          "villain": "e49622c3",
+          "pot_before": 7440,
+          "to_call": 1440,
+          "hero_action": {
+            "player": "Hero",
+            "type": "raise",
+            "amount": 1860,
+            "to_amount": 3300,
+            "all_in": false
+          },
+          "pot_odds": 0.16216216216216217
+        },
+        {
+          "street": "turn",
+          "facing": "checked",
+          "villain": null,
+          "pot_before": 12600,
+          "to_call": 0,
+          "hero_action": {
+            "player": "Hero",
+            "type": "bet",
+            "amount": 4738,
+            "to_amount": 0,
+            "all_in": true
+          },
+          "pot_odds": null
+        }
+      ]
+    },
+    {
+      "hand_id": "TM6030071913",
+      "position": "HJ",
+      "eff_stack_bb": 29.093333333333334,
+      "m_ratio": 10.77530864197531,
+      "preflop_role": "fold",
+      "invested": 45,
+      "net": -45,
+      "saw_flop": true,
+      "saw_showdown": false,
+      "decisions": [
+        {
+          "street": "preflop",
+          "facing": "unopened",
+          "villain": null,
+          "pot_before": 810,
+          "to_call": 300,
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "pot_odds": 0.2702702702702703
+        }
+      ]
+    },
+    {
+      "hand_id": "TM6030071899",
+      "position": "CO",
+      "eff_stack_bb": 29.243333333333332,
+      "m_ratio": 10.830864197530865,
+      "preflop_role": "fold",
+      "invested": 45,
+      "net": -45,
+      "saw_flop": true,
+      "saw_showdown": false,
+      "decisions": [
+        {
+          "street": "preflop",
+          "facing": "raise",
+          "villain": "c3644098",
+          "pot_before": 1410,
+          "to_call": 600,
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "pot_odds": 0.29850746268656714
+        }
+      ]
+    },
+    {
+      "hand_id": "TM6030071883",
+      "position": "BTN",
+      "eff_stack_bb": 29.393333333333334,
+      "m_ratio": 10.88641975308642,
+      "preflop_role": "fold",
+      "invested": 45,
+      "net": -45,
+      "saw_flop": true,
+      "saw_showdown": false,
+      "decisions": [
+        {
+          "street": "preflop",
+          "facing": "raise",
+          "villain": "e49622c3",
+          "pot_before": 1410,
+          "to_call": 600,
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "pot_odds": 0.29850746268656714
+        }
+      ]
+    }
+  ],
+  "hand_evals": [
+    {
+      "hand_id": "TM6030071921",
+      "decisions": [
+        {
+          "hand_id": "TM6030071921",
+          "street": "preflop",
+          "hero_action": {
+            "player": "Hero",
+            "type": "call",
+            "amount": 600,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "call",
+                1.0
+              ],
+              [
+                "fold",
+                0.0
+              ]
+            ],
+            "best_action": "call",
+            "source": "preflop_chart"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 preflop_chart 建議"
+        },
+        {
+          "hand_id": "TM6030071921",
+          "street": "flop",
+          "hero_action": {
+            "player": "Hero",
+            "type": "raise",
+            "amount": 1860,
+            "to_amount": 3300,
+            "all_in": false
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "call",
+                0.1749877780675888
+              ],
+              [
+                "raise",
+                0.82501220703125
+              ],
+              [
+                "fold",
+                7.945243768459065e-11
+              ]
+            ],
+            "best_action": "raise",
+            "source": "solver"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 solver 建議"
+        },
+        {
+          "hand_id": "TM6030071921",
+          "street": "turn",
+          "hero_action": {
+            "player": "Hero",
+            "type": "bet",
+            "amount": 4738,
+            "to_amount": 0,
+            "all_in": true
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "check",
+                0.0
+              ],
+              [
+                "bet",
+                1.0
+              ]
+            ],
+            "best_action": "bet",
+            "source": "solver"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 solver 建議"
+        }
+      ],
+      "hand_tier": "good",
+      "net_chips": -8683
+    },
+    {
+      "hand_id": "TM6030071913",
+      "decisions": [
+        {
+          "hand_id": "TM6030071913",
+          "street": "preflop",
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "fold",
+                1.0
+              ]
+            ],
+            "best_action": "fold",
+            "source": "preflop_chart"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 preflop_chart 建議"
+        }
+      ],
+      "hand_tier": "good",
+      "net_chips": -45
+    },
+    {
+      "hand_id": "TM6030071899",
+      "decisions": [
+        {
+          "hand_id": "TM6030071899",
+          "street": "preflop",
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "fold",
+                1.0
+              ]
+            ],
+            "best_action": "fold",
+            "source": "preflop_chart"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 preflop_chart 建議"
+        }
+      ],
+      "hand_tier": "good",
+      "net_chips": -45
+    },
+    {
+      "hand_id": "TM6030071883",
+      "decisions": [
+        {
+          "hand_id": "TM6030071883",
+          "street": "preflop",
+          "hero_action": {
+            "player": "Hero",
+            "type": "fold",
+            "amount": 0,
+            "to_amount": 0,
+            "all_in": false
+          },
+          "suggestion": {
+            "actions": [
+              [
+                "fold",
+                1.0
+              ]
+            ],
+            "best_action": "fold",
+            "source": "preflop_chart"
+          },
+          "ev_loss_bb": 0.0,
+          "tier": "good",
+          "explanation": "符合目前 preflop_chart 建議"
+        }
+      ],
+      "hand_tier": "good",
+      "net_chips": -45
+    }
+  ],
+  "stats": {
+    "hands": 4,
+    "gto_accuracy": 1.0,
+    "ev_loss_per_100": 0.0,
+    "mistakes": 0,
+    "vpip": 0.25,
+    "pfr": 0.0,
+    "three_bet": 0.0,
+    "fold_to_three_bet": 0.0,
+    "cbet": 0.0,
+    "wtsd": 0.25,
+    "wsd": 0.0,
+    "aggression_factor": 2.0,
+    "net_chips": -8818,
+    "by_position_net": {
+      "MP": -8683,
+      "HJ": -45,
+      "CO": -45,
+      "BTN": -45
+    }
+  },
+  "opponents": {
+    "4b49ee9d": {
+      "player": "4b49ee9d",
+      "hands": 4,
+      "vpip": 0.5,
+      "pfr": 0.0,
+      "three_bet": 0.0,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-passive"
+      ],
+      "exploit_notes": [
+        "可用較薄價值下注懲罰過度跟注"
+      ],
+      "assumed_range_key": "wide_passive"
+    },
+    "dcb4b332": {
+      "player": "dcb4b332",
+      "hands": 4,
+      "vpip": 0.25,
+      "pfr": 0.0,
+      "three_bet": 0.0,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "balanced"
+      ],
+      "exploit_notes": [
+        "樣本尚未顯示明顯偏差"
+      ],
+      "assumed_range_key": "balanced"
+    },
+    "e49622c3": {
+      "player": "e49622c3",
+      "hands": 4,
+      "vpip": 0.5,
+      "pfr": 0.5,
+      "three_bet": 0.0,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-aggressive"
+      ],
+      "exploit_notes": [
+        "面對頻繁加注時擴大價值 3bet，降低邊緣 bluff"
+      ],
+      "assumed_range_key": "wide_aggressive"
+    },
+    "c3644098": {
+      "player": "c3644098",
+      "hands": 4,
+      "vpip": 0.5,
+      "pfr": 0.25,
+      "three_bet": 0.25,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-aggressive",
+        "3bet-heavy"
+      ],
+      "exploit_notes": [
+        "面對頻繁加注時擴大價值 3bet，降低邊緣 bluff"
+      ],
+      "assumed_range_key": "wide_aggressive"
+    },
+    "b738995b": {
+      "player": "b738995b",
+      "hands": 4,
+      "vpip": 0.75,
+      "pfr": 0.5,
+      "three_bet": 0.25,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-aggressive",
+        "3bet-heavy"
+      ],
+      "exploit_notes": [
+        "面對頻繁加注時擴大價值 3bet，降低邊緣 bluff"
+      ],
+      "assumed_range_key": "wide_aggressive"
+    },
+    "f65476a4": {
+      "player": "f65476a4",
+      "hands": 4,
+      "vpip": 0.5,
+      "pfr": 0.0,
+      "three_bet": 0.0,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-passive"
+      ],
+      "exploit_notes": [
+        "可用較薄價值下注懲罰過度跟注"
+      ],
+      "assumed_range_key": "wide_passive"
+    },
+    "300a78cd": {
+      "player": "300a78cd",
+      "hands": 4,
+      "vpip": 0.5,
+      "pfr": 0.25,
+      "three_bet": 0.25,
+      "fold_to_cbet": 0.0,
+      "tags": [
+        "loose-aggressive",
+        "3bet-heavy"
+      ],
+      "exploit_notes": [
+        "面對頻繁加注時擴大價值 3bet，降低邊緣 bluff"
+      ],
+      "assumed_range_key": "wide_aggressive"
+    }
+  },
+  "leaks": []
+}

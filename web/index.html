@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>n8-review</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">n8</div>
+          <div>
+            <h1>n8-review</h1>
+            <p id="schemaLabel">No report loaded</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <span class="honesty-note">EV loss is an engine estimate, not solver EV.</span>
+          <label class="file-button" title="Load JSON report">
+            <input id="fileInput" type="file" accept="application/json,.json" />
+            <span>Load JSON</span>
+          </label>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="dashboard" aria-label="Dashboard">
+          <div class="metric">
+            <span>Hands</span>
+            <strong id="metricHands">0</strong>
+          </div>
+          <div class="metric">
+            <span>GTO Accuracy</span>
+            <strong id="metricAccuracy">--</strong>
+          </div>
+          <div class="metric">
+            <span>EV Loss / 100</span>
+            <strong id="metricEvLoss">--</strong>
+          </div>
+          <div class="metric">
+            <span>Net Chips</span>
+            <strong id="metricNet">--</strong>
+          </div>
+          <div class="metric">
+            <span>Mistakes</span>
+            <strong id="metricMistakes">0</strong>
+          </div>
+          <div class="metric engine-metric">
+            <span>Engine Mix</span>
+            <strong id="metricEngines">--</strong>
+            <div class="engine-actions">
+              <button id="solveAllButton" class="solve-all-button" type="button" title="Run solver for every postflop decision">
+                Run all solver
+              </button>
+              <span id="solveAllStatus" class="solve-all-status"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="filters" aria-label="Filters">
+          <div class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="Hand, card, position" />
+          </div>
+          <div class="segmented" id="tierFilter" aria-label="Tier filter">
+            <button class="active" data-tier="all">All</button>
+            <button data-tier="mistake">Mistake</button>
+            <button data-tier="inaccuracy">Inaccuracy</button>
+            <button data-tier="good">Good</button>
+          </div>
+          <select id="positionFilter" aria-label="Position filter">
+            <option value="all">All positions</option>
+          </select>
+          <select id="streetFilter" aria-label="Street filter">
+            <option value="all">All streets</option>
+            <option value="preflop">Preflop</option>
+            <option value="flop">Flop</option>
+            <option value="turn">Turn</option>
+            <option value="river">River</option>
+          </select>
+          <select id="resultFilter" aria-label="Result filter">
+            <option value="all">All results</option>
+            <option value="win">Won chips</option>
+            <option value="loss">Lost chips</option>
+          </select>
+        </section>
+
+        <section class="content-grid">
+          <aside class="hand-list-panel" aria-label="Hands">
+            <div class="panel-heading">
+              <h2>Hands</h2>
+              <span id="handCount">0</span>
+            </div>
+            <div id="handList" class="hand-list"></div>
+          </aside>
+
+          <section class="review-panel" aria-label="Hand review">
+            <div id="emptyState" class="empty-state">
+              <strong>Load a JSON report</strong>
+              <span>Run n8-review analyze with --json, then open it here.</span>
+            </div>
+
+            <div id="reviewView" class="review-view hidden">
+              <div class="review-header">
+                <div>
+                  <div class="hand-title">
+                    <span id="selectedTierDot" class="tier-dot"></span>
+                    <h2 id="selectedHandId">--</h2>
+                  </div>
+                  <div id="selectedMeta" class="muted"></div>
+                </div>
+                <div class="street-controls">
+                  <button id="prevStreet" title="Previous street">‹</button>
+                  <div id="streetTabs" class="street-tabs"></div>
+                  <button id="nextStreet" title="Next street">›</button>
+                  <button id="playReplay" title="Play replay">▶</button>
+                </div>
+              </div>
+
+              <div class="hero-hole-strip" aria-label="Hero hole cards">
+                <span>Hero</span>
+                <div id="heroHoleCards" class="card-row hero-hole-cards"></div>
+              </div>
+
+              <div class="table-stage">
+                <div class="poker-table">
+                  <div id="seatRing" class="seat-ring"></div>
+                  <div class="table-center">
+                    <div id="boardCards" class="card-row"></div>
+                    <div id="potInfo" class="pot-info"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timeline-section">
+                <div class="section-heading">
+                  <h3>Action Timeline</h3>
+                  <span id="streetLabel"></span>
+                </div>
+                <div id="actionTimeline" class="action-timeline"></div>
+              </div>
+
+              <div class="decision-section">
+                <div class="section-heading">
+                  <h3>Hero Decisions</h3>
+                  <span id="decisionCount"></span>
+                </div>
+                <div id="decisionList" class="decision-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="insights-panel" aria-label="Insights">
+            <section>
+              <div class="panel-heading">
+                <h2>Leaks</h2>
+                <span id="leakCount">0</span>
+              </div>
+              <div id="leakList" class="leak-list"></div>
+            </section>
+
+            <section>
+              <div class="panel-heading">
+                <h2>Positions</h2>
+              </div>
+              <div id="positionBars" class="bar-list"></div>
+            </section>
+
+            <section>
+              <div class="panel-heading">
+                <h2>Opponents</h2>
+              </div>
+              <div id="opponentList" class="opponent-list"></div>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+# 手牌歷史（個人資料，不入版控）
+/data/
+*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# 匯出 / 產生的報告（大型，不入版控）
+out.json
+report.json
+report.*.json
+.gstack/
+
+# 設計文件（私有，不上傳）
+docs/SDD.md

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "statusMessage": "Syncing CLAUDE.md -> AGENTS.md",
+            "command": "try { $d = [Console]::In.ReadToEnd() | ConvertFrom-Json; $f = $d.tool_input.file_path; if ($f -and (Split-Path $f -Leaf) -eq 'CLAUDE.md') { Copy-Item -LiteralPath $f -Destination (Join-Path (Split-Path $f -Parent) 'AGENTS.md') -Force } } catch {}"
+          }
+        ]
+      }
+    ]
+  }
+}
