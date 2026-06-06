@@ -9,12 +9,23 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from .evaluate.evaluator import _explain, _postflop_ev_loss
-from .evaluate.postflop import PostflopNode, SolverBackend, SolverBackendError
+from . import config
+from .analysis.leaks import aggregate_leaks
+from .analysis.stats import compute_stats
+from .evaluate.evaluator import DecisionEvaluator, _explain, _postflop_ev_loss
+from .evaluate.postflop import (
+    PostflopBackend,
+    PostflopNode,
+    SolverBackend,
+    SolverBackendError,
+    get_backend,
+)
 from .evaluate.quality import QualityThresholds, tier_from_ev_loss
 from .models import Action, ActionType, DecisionEval, GtoSuggestion, Street, parse_card
-from .report.json_export import _jsonable
-from .enrich import Decision
+from .parser import parse_hands, split_hands
+from .profile.opponent import build_profiles
+from .report.json_export import SCHEMA_VERSION, _jsonable
+from .enrich import Decision, build_context
 
 
 class WebServerConfig:
@@ -67,6 +78,15 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib hook
         parsed = urlparse(self.path)
+        if parsed.path == "/api/analyze":
+            try:
+                payload = self._read_json()
+                result = analyze_payload(payload, self.server_config)
+            except (ValueError, SolverBackendError) as exc:
+                self._send_json({"error": str(exc)}, status=400)
+                return
+            self._send_json(result)
+            return
         if parsed.path != "/api/solve":
             self._send_json({"error": "not found"}, status=404)
             return
@@ -127,6 +147,60 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
         self.send_response(302)
         self.send_header("location", location)
         self.end_headers()
+
+
+def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dict[str, Any]:
+    """把上傳的 .txt 手牌歷史跑完整 pipeline，回傳與 report.json 相同結構。"""
+    text = payload.get("text")
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("missing hand-history text")
+    hero = str(payload.get("hero") or config.DEFAULT.hero)
+    postflop = str(payload.get("postflop") or "equity")
+    backend = _analyze_backend(postflop, payload.get("solver_path"), config_obj)
+
+    hands = parse_hands(split_hands(text), hero)
+    if not hands:
+        raise ValueError("找不到手牌（檔案需含 'Poker Hand #' 區塊）")
+    contexts = [build_context(hand) for hand in hands]
+    profiles = build_profiles(hands, hero)
+    evaluator = DecisionEvaluator(
+        backend,
+        opponent_range_keys={
+            player: profile.assumed_range_key
+            for player, profile in profiles.by_player.items()
+        },
+    )
+    try:
+        hand_evals = [evaluator.evaluate_hand(hand, ctx) for hand, ctx in zip(hands, contexts)]
+    except SolverBackendError as exc:
+        raise ValueError(str(exc)) from exc
+    report = {
+        "schema": SCHEMA_VERSION,
+        "hands": hands,
+        "hero_contexts": contexts,
+        "hand_evals": hand_evals,
+        "stats": compute_stats(hands, contexts, hand_evals),
+        "opponents": profiles.by_player,
+        "leaks": aggregate_leaks(hand_evals),
+    }
+    return _jsonable(report)  # type: ignore[no-any-return]
+
+
+def _analyze_backend(
+    postflop: str, raw_solver_path: Any, config_obj: WebServerConfig
+) -> PostflopBackend:
+    if postflop == "equity":
+        return get_backend("equity", mc_samples=config.DEFAULT.mc_samples)
+    if postflop == "solver":
+        path = str(raw_solver_path).strip() if raw_solver_path else ""
+        if not path and config_obj.solver_path is not None:
+            path = str(config_obj.solver_path)
+        if not path:
+            raise ValueError("solver 後端需要 solver 路徑")
+        if not Path(path).exists():
+            raise ValueError(f"找不到 solver adapter: {path}")
+        return get_backend("solver", solver_path=path)
+    raise ValueError("postflop 必須是 equity|solver")
 
 
 def solve_payload(payload: dict[str, Any], config: WebServerConfig) -> dict[str, Any]:

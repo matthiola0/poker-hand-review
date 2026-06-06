@@ -15,7 +15,7 @@
 
 > Review your poker hands like a chess engine — hand by hand, decision by decision, with every move graded against GTO.
 
-**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, marks each decision 🟢 fine / 🟡 inaccuracy / 🔴 mistake, with the GTO recommendation and the reasoning. After one session you know exactly which hands you misplayed, where, and how you should have played them.
+**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, grades each decision against GTO and colors it 🟢 fine / 🟡 inaccuracy / 🔴 mistake — with the recommended action and the reasoning behind it. After one session you know exactly which hands you misplayed, where, and how you should have played them.
 
 <p align="center">
   <img src="docs/screenshots/hero.png" alt="poker-hand-review Web UI" width="720">
@@ -23,32 +23,59 @@
 
 ---
 
-## ✅ Supported formats
+## Table of contents
+
+- [What it does](#what-it-does)
+- [Supported formats](#supported-formats)
+- [Quick start](#quick-start)
+  - [Install](#install)
+  - [Run it](#run-it)
+- [Commands and options](#commands-and-options)
+- [Screenshot tour](#screenshot-tour)
+- [How it works](#how-it-works)
+- [Advanced: attach a real solver](#advanced-attach-a-real-solver)
+- [Project layout](#project-layout)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Status and roadmap](#status-and-roadmap)
+- [License](#license)
+
+---
+
+## What it does
+
+poker-hand-review turns a folder of raw hand-history `.txt` files into a graded, navigable review — the way a chess engine annotates a game move by move.
+
+- **Per-decision GTO grading.** Every Hero decision point is isolated and colored by how much EV it loses versus GTO, so mistakes stand out at a glance.
+- **Statistics.** GTO accuracy, EV loss per 100 hands, VPIP / PFR / 3Bet / C-bet, and net result by position.
+- **Opponent profiling.** Aggregates recurring opponents' tendencies, suggests exploits, and feeds the assumed ranges back into postflop equity.
+- **Interactive Web UI.** Replay any hand street by street, filter by position / street / result, and drill into leaks and opponent profiles.
+- **Pluggable postflop engine.** A fast equity/EV estimate by default; attach an external CFR solver for a true deep-solve on the hands that matter.
+
+> [!NOTE]
+> The perspective is always **Hero (you)**. The tool grades *your* decisions, not the table's. Set who Hero is with `--hero` (default `Hero`).
+
+---
+
+## Supported formats
 
 | Source / type | Supported |
 |---|---|
-| **Natural8 / GGPoker tournaments (MTT)** | ✅ Yes |
-| Other GG Network skins' tournaments | ✅ Usually (same hand-history format) |
-| Other poker sites (PokerStars, 888, partypoker…) | ❌ Not yet (different hand-history format) |
-| Cash games | ❌ Not yet (only tournament headers are parsed) |
+| Natural8 / GGPoker tournaments (MTT) | Yes |
+| Other GG Network skins' tournaments | Usually — same hand-history format |
+| Other poker sites (PokerStars, 888, partypoker…) | Not yet — different hand-history format |
+| Cash games | Not yet — only tournament headers are parsed |
 
-> In short: **only Natural8 / GGPoker tournament hand histories are supported right now.** Files from other sites or cash games won't parse.
+> [!IMPORTANT]
+> Only **Natural8 / GGPoker tournament** hand histories are supported right now. Files from other sites or cash games will not parse.
 
----
-
-## ✨ Features
-
-- **🎯 Per-decision GTO grading** — every Hero decision point is listed and colored by how much EV it loses versus GTO.
-- **📊 Statistics** — GTO accuracy, EV loss per 100 hands, VPIP / PFR / 3Bet / C-bet, and net by position.
-- **👥 Opponent profiling** — aggregates recurring opponents' tendencies, suggests exploits, and feeds back into postflop equity.
-- **🖥️ Web UI** — interactive hand-by-hand replay. No backend, no build step, just open it.
-- **🔌 Pluggable solver** — a lightweight equity/EV estimate by default; attach an external CFR solver for deep solves on key hands.
+The parser is deliberately tolerant: known tokens are parsed strictly, but any unrecognized line is recorded as a warning (`raw_unparsed`) instead of aborting the whole file.
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
-### 1. Install
+### Install
 
 ```powershell
 python -m venv .venv
@@ -56,70 +83,107 @@ python -m venv .venv
 pip install -e .
 ```
 
-### 2. Analyze your hands
+Requires Python 3.11 or newer. Commands below use PowerShell syntax (Windows).
 
-Drop your n8-exported `.txt` files into a folder (see `data/` for an example), then:
+### Run it
+
+poker-hand-review can be driven entirely from the browser or from the command line. Both paths run the same engine and produce the same review; choose by how much you are analyzing at once — they are alternatives, not sequential steps.
+
+| | Browser | Command line |
+|---|---|---|
+| Best for | reviewing a single file | batch-analyzing a folder |
+| Input per run | one `.txt` | an entire folder of `.txt` |
+| Terminal review | — | yes |
+| Writes `report.json` | no | yes (reloadable later) |
+
+**Browser** — analyze on upload, no separate `analyze` step:
+
+```powershell
+poker-hand-review web
+```
+
+Open the printed URL (default <http://127.0.0.1:8765/>), click **Load txt / json**, and select a `.txt`. The local server parses and grades it on the spot, then renders the review; nothing is written to disk. The backend dropdown (**Equity** / **Solver**) and solver-path field control how postflop spots are graded.
+
+**Command line** — analyze a folder up front, then open the report:
 
 ```powershell
 poker-hand-review analyze ".\data" --json report.json
-```
-
-The terminal prints a colored, hand-by-hand review plus stats, and writes a `report.json`.
-
-> No hand histories of your own yet? A synthetic `data/sample.txt` ships with the repo — try it right away: `poker-hand-review analyze data/sample.txt`.
-
-### 3. Explore in the Web UI
-
-```powershell
 poker-hand-review web --report report.json
 ```
 
-Open the URL printed in the terminal (default http://127.0.0.1:8765/) to replay hands, filter by position / street / result, and inspect leaks and opponent profiles.
+`analyze` prints a colored, hand-by-hand review in the terminal and writes `report.json`; `web --report` opens that report in the browser. This path processes a whole folder in one run and leaves a reusable `report.json`.
 
-> Don't want a server? You can also just open `web/index.html` in a browser and load `report.json` manually.
+> [!TIP]
+> No hand histories of your own yet? A synthetic `data/sample.txt` ships with the repo:
+> ```powershell
+> poker-hand-review analyze data/sample.txt
+> ```
+
+Either way, once a report is open you can replay hands street by street, filter by position / street / result, and drill into leaks and opponent profiles.
+
+> [!NOTE]
+> A `.json` report can also be opened without the server — open `web/index.html` and load the file manually. Analyzing a `.txt` always requires the server, because parsing and grading run in Python.
 
 ---
 
-## 📸 Screenshot tour
+## Commands and options
 
-> A quick visual tour of the Web UI (the hero image at the top shows the full interface; click any shot to enlarge).
+| Command | What it does |
+|---|---|
+| `poker-hand-review analyze <path>` | Hand-by-hand colored review + stats + leaks |
+| `poker-hand-review hand <file> --id <hand-id>` | Deep, street-by-street review of a single hand |
+| `poker-hand-review stats <path>` | Statistics only |
+| `poker-hand-review profile <path>` | Opponent profiles (VPIP / PFR / 3Bet / tags) |
+| `poker-hand-review web` | Start the local Web UI server |
+
+`<path>` may be a single `.txt` file or a folder of hand-history files.
+
+**`analyze` options**
+
+| Option | What it does | Example |
+|---|---|---|
+| `--json <file>` | Also export a Web UI JSON report | `--json report.json` |
+| `--hero <name>` | Set the Hero (you) name; default `Hero` | `--hero "YourName"` |
+| `--min-tier <tier>` | Show only this tier or worse: `good` / `inaccuracy` / `mistake` | `--min-tier inaccuracy` |
+| `--postflop <backend>` | Postflop engine: `equity` (default) or `solver` | `--postflop solver` |
+| `--solver-path <path>` | External solver adapter path (with `--postflop solver`) | `--solver-path .\validation\texassolver.cmd` |
+| `--no-color` | Disable ANSI colors in the terminal output | `--no-color` |
+
+**`web` options**
+
+| Option | What it does | Default |
+|---|---|---|
+| `--report <file>` | Preload a JSON report on startup | none |
+| `--solver-path <path>` | Enable the in-UI solver backend | none (equity only) |
+| `--host` / `--port` | Bind address | `127.0.0.1` / `8765` |
+
+```powershell
+# A few common invocations
+poker-hand-review analyze ".\data" --hero "Hero"
+poker-hand-review analyze ".\data" --min-tier inaccuracy
+poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --solver-path C:\path\solver.exe
+```
+
+---
+
+## Screenshot tour
+
+A quick visual tour of the Web UI. The hero image at the top shows the full interface; click any shot to enlarge.
 
 <table>
 <tr>
-<td width="50%" align="center"><b>① Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded 🟢🟡🔴 by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="210"></td>
-<td width="50%" align="center"><b>② Hand replay</b><br><sub>Table + action timeline + decision card (GTO/solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="360"></td>
+<td width="50%" align="center"><b>1. Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="210"></td>
+<td width="50%" align="center"><b>2. Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="360"></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>③ Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="270"></td>
-<td width="50%" align="center"><b>④ Net by position</b><br><sub>Win/loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="300"></td>
+<td width="50%" align="center"><b>3. Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="270"></td>
+<td width="50%" align="center"><b>4. Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="300"></td>
 </tr>
 </table>
 
 ---
 
-## 📖 Commands
-
-| Command | What it does |
-|---|---|
-| `poker-hand-review analyze <path>` | Hand-by-hand colored review + stats + leaks; add `--json report.json` to export for the Web UI |
-| `poker-hand-review hand <file> --id <hand-id>` | Deep, street-by-street review of a single hand |
-| `poker-hand-review stats <path>` | Statistics only |
-| `poker-hand-review profile <path>` | Opponent profiles (VPIP / PFR / 3Bet / tags) |
-| `poker-hand-review web --report report.json` | Start the local Web UI server |
-
-**Common options**
-
-```powershell
-poker-hand-review analyze ".\data" --hero "Hero"          # set the Hero name (default "Hero")
-poker-hand-review analyze ".\data" --min-tier inaccuracy  # only show inaccuracies and worse
-poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --solver-path C:\path\solver.exe
-```
-
-`<path>` can be a single `.txt` file or a folder full of hand-history files.
-
----
-
-## 🧠 How it works
+## How it works
 
 ```
 .txt ─▶ parse ─▶ Hero-view enrichment ─▶ per-decision GTO grading ─▶ report / Web UI
@@ -127,14 +191,62 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
                                          └ postflop: equity estimate (default) or CFR solver (optional)
 ```
 
-- **Preflop** matches precomputed GTO range charts (per-position open / 3bet / call, short-stack push/fold) — true GTO, offline, and fast.
-- **Postflop** uses equity vs the opponent range + EV heuristics to reliably flag obvious mistakes; attach an external adapter for a real solver deep-dive on key hands.
+- **Preflop** matches precomputed GTO range charts (per-position open / 3bet / call, plus short-stack push/fold) — true GTO, offline, and fast.
+- **Postflop** computes equity versus the opponent's assumed range and applies EV heuristics to reliably flag obvious mistakes. Attach an external adapter to replace those heuristics with a real solver on the hands you care about.
 
-The solver adapter's JSON contract is documented in [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
+The solver adapter is an external process that speaks a documented JSON contract — see [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
+
+> [!WARNING]
+> Without a solver, `ev_loss_bb` is an engine **estimate** from chart / equity heuristics. Treat it as **severity guidance**, not exact solver EV. For precise numbers, re-run the hand with `--postflop solver` and a solver adapter.
 
 ---
 
-## 📁 Project layout
+## Advanced: attach a real solver
+
+**You do not need a solver for normal use** — the default equity backend already flags obvious mistakes. Attach a solver only when you want a true CFR deep-solve on specific hands.
+
+<details>
+<summary><b>Set up TexasSolver (Windows, no build required)</b></summary>
+
+<br>
+
+poker-hand-review ships with an adapter for [TexasSolver](https://github.com/bupticybee/TexasSolver):
+
+1. Download TexasSolver's `console_solver` (bundled in the Windows release — no build needed).
+2. Point the adapter at it:
+   ```powershell
+   $env:TEXAS_SOLVER_CONSOLE = "C:\TexasSolver\console_solver.exe"
+   ```
+3. Run a hand through the bundled launcher:
+   ```powershell
+   poker-hand-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
+   ```
+
+To enable the solver inside the Web UI instead, start the server with `--solver-path`, or pick **Solver** and fill in the path field when loading a `.txt`.
+
+</details>
+
+<details>
+<summary><b>Solver environment variables</b></summary>
+
+<br>
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `TEXAS_SOLVER_CONSOLE` | Path to TexasSolver `console_solver(.exe)` | required |
+| `PHR_SOLVER_PATH` / `TEXAS_SOLVER_PATH` | Default adapter path, used instead of `--solver-path` | unset |
+| `PHR_SOLVER_THREADS` | CFR thread count | `8` |
+| `PHR_SOLVER_ACCURACY` | Exploitability target (% of pot) | `0.5` |
+| `PHR_SOLVER_MAX_ITER` | Maximum CFR iterations | `150` |
+| `PHR_SOLVER_TIMEOUT` | Per-solve timeout (seconds) | `300` |
+
+</details>
+
+Full setup, tuning knobs, and the modeling assumptions are documented in [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
+
+---
+
+## Project layout
 
 ```
 poker-hand-review/
@@ -146,64 +258,42 @@ poker-hand-review/
 │   ├── analysis/       equity / stats / leak aggregation
 │   ├── profile/        opponent profiling
 │   └── report/         CLI colored output + JSON export
-├── web/                static Web UI (SPA)
-├── docs/               solver adapter contract
+├── web/                static Web UI (SPA) + local server endpoints
+├── docs/               solver adapter contract + translations
 ├── data/               example hand histories
+├── tools/              TexasSolver adapter and chart import scripts
 └── tests/              tests
 ```
 
 ---
 
-## 🔬 Advanced (optional): attach a real solver
-
-**You don't need to install any solver for normal use** — the default equity backend already flags obvious mistakes.
-
-To get a true CFR deep-solve on key hands, attach [TexasSolver](https://github.com/bupticybee/TexasSolver):
-
-1. Download TexasSolver's `console_solver` (bundled in the Windows release — no build needed).
-2. Point to it: `$env:TEXAS_SOLVER_CONSOLE = "C:\TexasSolver\console_solver.exe"`
-3. Run via the bundled launcher:
-   ```powershell
-   poker-hand-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
-   ```
-
-Full setup, tuning knobs, and modeling assumptions are in [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
-
----
-
-## ⚠️ About the EV estimate
-
-Without a solver, `ev_loss_bb` is an engine **estimate** (from chart / equity heuristics). Treat it as **severity guidance**, not exact solver EV. For precise numbers, run that hand with `--postflop solver` and a solver adapter.
-
----
-
-## 🛠️ Development
+## Development
 
 ```powershell
 pip install -e ".[dev]"   # install dev deps (pytest / ruff / mypy)
 pytest                    # tests
-ruff check src tests      # lint
-mypy src                  # type check
+ruff check src tests      # lint (line length 100)
+mypy src                  # type check (strict)
 ```
 
 Requires Python 3.11+.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Issues and PRs welcome! A few notes before you submit, to keep reviews smooth:
+Issues and PRs are welcome. A few notes to keep reviews smooth:
 
 **Before you start**
 
-- For larger changes, **open an issue first** to align on direction before implementing.
+- For larger changes, open an issue first to align on direction before implementing.
 
 **While coding** (see [`CLAUDE.md`](CLAUDE.md))
 
-- **Keep it simple** — minimum code that solves the problem; no abstractions or configurability that weren't asked for.
-- **Surgical changes** — touch only what you must; don't refactor or reformat adjacent code; match the existing style.
-- **Don't break the parser's tolerance rule** — known tokens are parsed strictly; unknown lines go to `raw_unparsed` as a warning without aborting.
-- Comments may be in **English or Chinese** — just match the surrounding style.
+- **Keep it simple** — the minimum code that solves the problem; no abstractions or configurability that were not asked for.
+- **Make surgical changes** — touch only what you must; do not refactor or reformat adjacent code; match the existing style.
+- **Respect the parser's tolerance rule** — known tokens are parsed strictly; unknown lines go to `raw_unparsed` as a warning without aborting.
+- Comments may be in English or Chinese — match the surrounding style.
 
 **Before you submit**
 
@@ -213,19 +303,22 @@ ruff check src tests   # lint must pass
 mypy src               # type check (strict) must pass
 ```
 
-- When changing grading, parsing, or export logic, add a test that reproduces/verifies the change.
-- Keep each PR focused on one thing; write commit messages that explain *what* changed and *why*.
+- When changing grading, parsing, or export logic, add a test that reproduces or verifies the change.
+- Keep each PR focused on one thing, and write commit messages that explain *what* changed and *why*.
 
-> Note: edit `CLAUDE.md` only — `AGENTS.md` is auto-synced from it by a hook.
-
----
-
-## 📌 Status
-
-The core path (M1–M7) is implemented: parsing, Hero-view enrichment, equity backend, preflop grading, stats / leaks / profiling, JSON export, Web UI, and the optional external solver adapter.
+> [!NOTE]
+> Edit `CLAUDE.md` only — `AGENTS.md` is auto-synced from it by a hook.
 
 ---
 
-## 📄 License
+## Status and roadmap
+
+The core path (M1–M7) is implemented: parsing, Hero-view enrichment, the equity backend, preflop grading, stats / leaks / profiling, JSON export, the Web UI, and the optional external solver adapter.
+
+Not yet supported: poker sites other than the GG Network, and cash-game formats.
+
+---
+
+## License
 
 MIT License — see [`LICENSE`](LICENSE).

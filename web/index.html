@@ -18,9 +18,20 @@
         </div>
         <div class="top-actions">
           <span class="honesty-note">EV loss is an engine estimate, not solver EV.</span>
-          <label class="file-button" title="Load JSON report">
-            <input id="fileInput" type="file" accept="application/json,.json" />
-            <span>Load JSON</span>
+          <select id="analyzeBackend" title="Postflop backend for .txt analysis">
+            <option value="equity">Equity</option>
+            <option value="solver">Solver</option>
+          </select>
+          <input
+            id="solverPathInput"
+            type="text"
+            placeholder="solver adapter path"
+            title="Solver adapter path (used when backend is Solver)"
+            disabled
+          />
+          <label class="file-button" title="Load a .txt hand history (analyzed on the server) or a .json report">
+            <input id="fileInput" type="file" accept=".txt,.json,application/json,text/plain" />
+            <span>Load txt / json</span>
           </label>
         </div>
       </header>

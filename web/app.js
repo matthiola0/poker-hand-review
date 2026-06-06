@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function bindElements() {
   [
     "fileInput",
+    "analyzeBackend",
+    "solverPathInput",
     "schemaLabel",
     "metricHands",
     "metricAccuracy",
@@ -74,7 +76,16 @@ function bindEvents() {
     const file = event.target.files?.[0];
     if (!file) return;
     const text = await file.text();
-    loadReport(JSON.parse(text), file.name);
+    if (file.name.toLowerCase().endsWith(".txt")) {
+      await analyzeText(text, file.name);
+    } else {
+      loadReport(JSON.parse(text), file.name);
+    }
+    event.target.value = "";
+  });
+
+  els.analyzeBackend.addEventListener("change", (event) => {
+    els.solverPathInput.disabled = event.target.value !== "solver";
   });
 
   els.searchInput.addEventListener("input", (event) => {
@@ -124,6 +135,24 @@ function loadReport(report, sourceName) {
   els.schemaLabel.textContent = `${sourceName} · schema ${report.schema || "unknown"}`;
   hydratePositionFilter();
   render();
+}
+
+async function analyzeText(text, sourceName) {
+  const postflop = els.analyzeBackend.value || "equity";
+  const solverPath = els.solverPathInput.value.trim();
+  els.schemaLabel.textContent = `Analyzing ${sourceName}… (${postflop})`;
+  try {
+    const resp = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text, filename: sourceName, postflop, solver_path: solverPath }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+    loadReport(data, sourceName);
+  } catch (err) {
+    els.schemaLabel.textContent = `Analyze failed: ${err.message}`;
+  }
 }
 
 async function loadReportFromQuery() {
