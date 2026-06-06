@@ -14,7 +14,7 @@ The adapter prints strategy JSON to stdout.
 
 ```json
 {
-  "contract": "n8_review.solver_node.v1",
+  "contract": "poker_hand_review.solver_node.v1",
   "street": "flop",
   "hero_hole": ["Ah", "Kh"],
   "board": ["As", "7d", "2c"],
@@ -54,16 +54,16 @@ Also accepted:
 }
 ```
 
-If `best_action` is omitted, n8-review uses the highest-frequency action.
+If `best_action` is omitted, poker-hand-review uses the highest-frequency action.
 
 ## CLI
 
 ```powershell
 $env:PYTHONPATH='src'
-python -m n8_review.cli hand data\hands.txt --id TM123 --postflop solver --solver-path C:\path\solver-adapter.exe
+python -m poker_hand_review.cli hand data\hands.txt --id TM123 --postflop solver --solver-path C:\path\solver-adapter.exe
 ```
 
-`--solver-path` can also be provided through `N8_REVIEW_SOLVER_PATH` or
+`--solver-path` can also be provided through `PHR_SOLVER_PATH` or
 `TEXAS_SOLVER_PATH`.
 
 ---
@@ -83,7 +83,7 @@ dumped game tree, and prints the strategy JSON.
 ### Setup
 
 1. Build / download `console_solver(.exe)` from TexasSolver. Note its path.
-2. n8-review invokes the solver path as `<solver-path> <input.json>` with no extra
+2. poker-hand-review invokes the solver path as `<solver-path> <input.json>` with no extra
    args, so point it at a 2-line launcher that calls the adapter:
 
    **Windows `texassolver.cmd`:**
@@ -100,13 +100,13 @@ dumped game tree, and prints the strategy JSON.
    ```powershell
    $env:TEXAS_SOLVER_CONSOLE = "C:\TexasSolver\console_solver.exe"
    ```
-4. Run n8-review pointed at the launcher:
+4. Run poker-hand-review pointed at the launcher:
    ```powershell
-   n8-review hand .\data\hands.txt --id TM123 --postflop solver --solver-path .\texassolver.cmd
+   poker-hand-review hand .\data\hands.txt --id TM123 --postflop solver --solver-path .\texassolver.cmd
    ```
 
-Tuning via env: `N8_SOLVER_THREADS` (8), `N8_SOLVER_ACCURACY` (0.5, % pot),
-`N8_SOLVER_MAX_ITER` (150), `N8_SOLVER_TIMEOUT` (300s).
+Tuning via env: `PHR_SOLVER_THREADS` (8), `PHR_SOLVER_ACCURACY` (0.5, % pot),
+`PHR_SOLVER_MAX_ITER` (150), `PHR_SOLVER_TIMEOUT` (300s).
 
 ### Validate without solving a full tree
 
@@ -117,7 +117,7 @@ python tools\texassolver_adapter.py --dry-run node.json
 # 2. Run that input through your TexasSolver once, then check the parser reads it:
 python tools\texassolver_adapter.py --parse output_result.json node.json
 ```
-`--parse` prints the n8-review strategy. If your TexasSolver build dumps a different
+`--parse` prints the poker-hand-review strategy. If your TexasSolver build dumps a different
 JSON shape, the error message lists the keys it found so the parser is a 1-line fix.
 
 ### Modeling assumptions (read this)

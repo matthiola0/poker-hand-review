@@ -1,6 +1,6 @@
-# n8-review
+# poker-hand-review
 
-[English](README.en.md) | **繁體中文**
+**English** | [繁體中文](docs/i18n/README.zh-TW.md) | [简体中文](docs/i18n/README.zh-CN.md)
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white" alt="Python 3.11+">
@@ -13,42 +13,69 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license MIT">
 </p>
 
-> 像西洋棋引擎一樣檢討你的撲克手牌 —— 逐手、逐決策，用 GTO 為你的每一步上色。
+> Review your poker hands like a chess engine — hand by hand, decision by decision, with every move graded against GTO.
 
-**n8-review** 讀取 Natural8 / GGPoker 錦標賽匯出的手牌歷史，從 **你本人（Hero）** 的視角，把每個決策標成 🟢 可接受 / 🟡 不準 / 🔴 失誤，並附上 GTO 建議與理由。看完一場，你會清楚知道「我哪幾手打錯、錯在哪、該怎麼打」。
+**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, grades each decision against GTO and colors it 🟢 fine / 🟡 inaccuracy / 🔴 mistake — with the recommended action and the reasoning behind it. After one session you know exactly which hands you misplayed, where, and how you should have played them.
 
 <p align="center">
-  <img src="artifacts-solver-chart-ui.png" alt="n8-review Web UI" width="720">
+  <img src="docs/screenshots/hero.png" alt="poker-hand-review Web UI" width="720">
 </p>
 
 ---
 
-## ✅ 支援範圍
+## Table of contents
 
-| 來源 / 類型 | 支援 |
+- [What it does](#what-it-does)
+- [Supported formats](#supported-formats)
+- [Quick start](#quick-start)
+  - [Install](#install)
+  - [Run it](#run-it)
+- [Commands and options](#commands-and-options)
+- [Screenshot tour](#screenshot-tour)
+- [How it works](#how-it-works)
+- [Advanced: attach a real solver](#advanced-attach-a-real-solver)
+- [Project layout](#project-layout)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Status and roadmap](#status-and-roadmap)
+- [License](#license)
+
+---
+
+## What it does
+
+poker-hand-review turns a folder of raw hand-history `.txt` files into a graded, navigable review — the way a chess engine annotates a game move by move.
+
+- **Per-decision GTO grading.** Every Hero decision point is isolated and colored by how much EV it loses versus GTO, so mistakes stand out at a glance.
+- **Statistics.** GTO accuracy, EV loss per 100 hands, VPIP / PFR / 3Bet / C-bet, and net result by position.
+- **Opponent profiling.** Aggregates recurring opponents' tendencies, suggests exploits, and feeds the assumed ranges back into postflop equity.
+- **Interactive Web UI.** Replay any hand street by street, filter by position / street / result, and drill into leaks and opponent profiles.
+- **Pluggable postflop engine.** A fast equity/EV estimate by default; attach an external CFR solver for a true deep-solve on the hands that matter.
+
+> [!NOTE]
+> The perspective is always **Hero (you)**. The tool grades *your* decisions, not the table's. Set who Hero is with `--hero` (default `Hero`).
+
+---
+
+## Supported formats
+
+| Source / type | Supported |
 |---|---|
-| **Natural8 / GGPoker 錦標賽（MTT）** | ✅ 支援 |
-| 其他 GG 網路 skin 的錦標賽 | ✅ 多半可用（同一套手牌歷史格式） |
-| 其他撲克室（PokerStars、888、partypoker…） | ❌ 尚未支援（手牌歷史格式不同） |
-| 現金局（cash game） | ❌ 尚未支援（目前只解析錦標賽標頭） |
+| Natural8 / GGPoker tournaments (MTT) | Yes |
+| Other GG Network skins' tournaments | Usually — same hand-history format |
+| Other poker sites (PokerStars, 888, partypoker…) | Not yet — different hand-history format |
+| Cash games | Not yet — only tournament headers are parsed |
 
-> 簡單說:**目前只吃 Natural8 / GGPoker 的錦標賽手牌歷史**。丟其他撲克室或現金局的檔案會解析不到。
+> [!IMPORTANT]
+> Only **Natural8 / GGPoker tournament** hand histories are supported right now. Files from other sites or cash games will not parse.
 
----
-
-## ✨ 特色
-
-- **🎯 逐決策 GTO 評分** — 每手列出 Hero 的每個決策點，依偏離 GTO 的 EV 損失上色。
-- **📊 統計報表** — GTO 準確率、每百手 EV 損失、VPIP / PFR / 3Bet / C-bet、各位置盈虧。
-- **👥 對手群像** — 聚合重複對手的傾向、產生剝削建議，並回饋給翻後 equity 計算。
-- **🖥️ Web UI** — 互動式逐手回放，零後端、零建置，開檔即用。
-- **🔌 可插拔 solver** — 預設用輕量 equity/EV 估計；關鍵手可接外部 CFR solver 深解。
+The parser is deliberately tolerant: known tokens are parsed strictly, but any unrecognized line is recorded as a warning (`raw_unparsed`) instead of aborting the whole file.
 
 ---
 
-## 🚀 快速開始
+## Quick start
 
-### 1. 安裝
+### Install
 
 ```powershell
 python -m venv .venv
@@ -56,157 +83,242 @@ python -m venv .venv
 pip install -e .
 ```
 
-### 2. 分析你的手牌
+Requires Python 3.11 or newer. Commands below use PowerShell syntax (Windows).
 
-把 n8 匯出的 `.txt` 放進一個資料夾（範例見 `data/`），然後：
+### Run it
+
+poker-hand-review can be driven entirely from the browser or from the command line. Both paths run the same engine and produce the same review; choose by how much you are analyzing at once — they are alternatives, not sequential steps.
+
+| | Browser | Command line |
+|---|---|---|
+| Best for | reviewing a single file | batch-analyzing a folder |
+| Input per run | one `.txt` | an entire folder of `.txt` |
+| Terminal review | — | yes |
+| Writes `report.json` | no | yes (reloadable later) |
+
+**Browser** — analyze on upload, no separate `analyze` step:
 
 ```powershell
-n8-review analyze ".\data" --json report.json
+poker-hand-review web
 ```
 
-終端機會立刻印出彩色的逐手檢討與統計，同時產生一份 `report.json`。
+Open the printed URL (default <http://127.0.0.1:8765/>), click **Load txt / json**, and select a `.txt`. The local server parses and grades it on the spot, then renders the review; nothing is written to disk. The backend dropdown (**Equity** / **Solver**) and solver-path field control how postflop spots are graded.
 
-### 3. 用 Web UI 互動檢視
+**Command line** — analyze a folder up front, then open the report:
 
 ```powershell
-n8-review web --report report.json
+poker-hand-review analyze ".\data" --json report.json
+poker-hand-review web --report report.json
 ```
 
-打開終端機印出的網址（預設 http://127.0.0.1:8765/），就能逐手回放、按位置/街段/結果篩選，並查看漏洞與對手群像。
+`analyze` prints a colored, hand-by-hand review in the terminal and writes `report.json`; `web --report` opens that report in the browser. This path processes a whole folder in one run and leaves a reusable `report.json`.
 
-> 不想開 server？也可以直接用瀏覽器打開 `web/index.html`，再手動載入 `report.json`。
+> [!TIP]
+> No hand histories of your own yet? A synthetic `data/sample.txt` ships with the repo:
+> ```powershell
+> poker-hand-review analyze data/sample.txt
+> ```
+
+Either way, once a report is open you can replay hands street by street, filter by position / street / result, and drill into leaks and opponent profiles.
+
+> [!NOTE]
+> A `.json` report can also be opened without the server — open `web/index.html` and load the file manually. Analyzing a `.txt` always requires the server, because parsing and grading run in Python.
 
 ---
 
-## 📖 指令一覽
+## Commands and options
 
-| 指令 | 用途 |
+| Command | What it does |
 |---|---|
-| `n8-review analyze <路徑>` | 逐手彩色檢討 + 統計 + 漏洞；加 `--json report.json` 匯出給 Web UI |
-| `n8-review hand <檔> --id <手牌ID>` | 單手逐街深度檢討 |
-| `n8-review stats <路徑>` | 只看統計指標 |
-| `n8-review profile <路徑>` | 對手群像（VPIP / PFR / 3Bet / 標籤） |
-| `n8-review web --report report.json` | 啟動 Web UI 本機 server |
+| `poker-hand-review analyze <path>` | Hand-by-hand colored review + stats + leaks |
+| `poker-hand-review hand <file> --id <hand-id>` | Deep, street-by-street review of a single hand |
+| `poker-hand-review stats <path>` | Statistics only |
+| `poker-hand-review profile <path>` | Opponent profiles (VPIP / PFR / 3Bet / tags) |
+| `poker-hand-review web` | Start the local Web UI server |
 
-**常用選項**
+`<path>` may be a single `.txt` file or a folder of hand-history files.
+
+**`analyze` options**
+
+| Option | What it does | Example |
+|---|---|---|
+| `--json <file>` | Also export a Web UI JSON report | `--json report.json` |
+| `--hero <name>` | Set the Hero (you) name; default `Hero` | `--hero "YourName"` |
+| `--min-tier <tier>` | Show only this tier or worse: `good` / `inaccuracy` / `mistake` | `--min-tier inaccuracy` |
+| `--postflop <backend>` | Postflop engine: `equity` (default) or `solver` | `--postflop solver` |
+| `--solver-path <path>` | External solver adapter path (with `--postflop solver`) | `--solver-path .\validation\texassolver.cmd` |
+| `--no-color` | Disable ANSI colors in the terminal output | `--no-color` |
+
+**`web` options**
+
+| Option | What it does | Default |
+|---|---|---|
+| `--report <file>` | Preload a JSON report on startup | none |
+| `--solver-path <path>` | Enable the in-UI solver backend | none (equity only) |
+| `--host` / `--port` | Bind address | `127.0.0.1` / `8765` |
 
 ```powershell
-n8-review analyze ".\data" --hero "Hero"          # 指定 Hero 名稱（預設 "Hero"）
-n8-review analyze ".\data" --min-tier inaccuracy  # 只顯示不準以上的手
-n8-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --solver-path C:\path\solver.exe
-```
-
-`<路徑>` 可以是單一 `.txt` 檔，也可以是裝滿手牌檔的資料夾。
-
----
-
-## 🧠 運作原理
-
-```
-.txt ─▶ 解析 ─▶ Hero 視角衍生 ─▶ 逐決策 GTO 評分 ─▶ 報表 / Web UI
-                （位置/籌碼/M）   ├ 翻前：GTO 範圍表查表
-                                 └ 翻後：equity 估計（預設）或 CFR solver（選用）
-```
-
-- **翻前** 比對預存的 GTO 範圍表（各位置 open / 3bet / call、短籌碼 push/fold），是真正的 GTO、離線又快。
-- **翻後** 用 equity vs 對手範圍 + EV 啟發法可靠標出「明顯失誤」；想對關鍵手做真 solver 深解，再接上外部 adapter。
-
-Solver adapter 的 JSON 契約見 [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md)。
-
----
-
-## 📁 專案結構
-
-```
-n8 analyze/
-├── src/n8_review/      核心引擎
-│   ├── parser/         手牌歷史文字解析
-│   ├── enrich/         Hero 視角衍生（位置、有效籌碼、決策節點）
-│   ├── gto/            翻前 GTO 範圍表
-│   ├── evaluate/       逐決策評分 + 可插拔翻後後端
-│   ├── analysis/       equity / 統計 / 漏洞聚合
-│   ├── profile/        對手群像
-│   └── report/         CLI 彩色輸出 + JSON 匯出
-├── web/                靜態 Web UI（SPA）
-├── docs/               solver adapter 契約文件
-├── data/               範例手牌歷史
-└── tests/              測試
+# A few common invocations
+poker-hand-review analyze ".\data" --hero "Hero"
+poker-hand-review analyze ".\data" --min-tier inaccuracy
+poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --solver-path C:\path\solver.exe
 ```
 
 ---
 
-## 🔬 進階（選用）：接真 solver
+## Screenshot tour
 
-**一般使用不需要安裝任何 solver** —— 預設的 equity 後端就能標出明顯失誤。
+A quick visual tour of the Web UI. The hero image at the top shows the full interface; click any shot to enlarge.
 
-若你想對關鍵手做真正的 CFR 深解，可以接上 [TexasSolver](https://github.com/bupticybee/TexasSolver)：
+<table>
+<tr>
+<td width="50%" align="center"><b>1. Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="210"></td>
+<td width="50%" align="center"><b>2. Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="360"></td>
+</tr>
+<tr>
+<td width="50%" align="center"><b>3. Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="270"></td>
+<td width="50%" align="center"><b>4. Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="300"></td>
+</tr>
+</table>
 
-1. 下載 TexasSolver 的 `console_solver`（Windows 釋出包已內含，免自行編譯）。
-2. 設定它的路徑：`$env:TEXAS_SOLVER_CONSOLE = "C:\TexasSolver\console_solver.exe"`
-3. 用內建啟動器跑：
+---
+
+## How it works
+
+```
+.txt ─▶ parse ─▶ Hero-view enrichment ─▶ per-decision GTO grading ─▶ report / Web UI
+                 (position/stack/M)      ├ preflop: GTO range-chart lookup
+                                         └ postflop: equity estimate (default) or CFR solver (optional)
+```
+
+- **Preflop** matches precomputed GTO range charts (per-position open / 3bet / call, plus short-stack push/fold) — true GTO, offline, and fast.
+- **Postflop** computes equity versus the opponent's assumed range and applies EV heuristics to reliably flag obvious mistakes. Attach an external adapter to replace those heuristics with a real solver on the hands you care about.
+
+The solver adapter is an external process that speaks a documented JSON contract — see [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
+
+> [!WARNING]
+> Without a solver, `ev_loss_bb` is an engine **estimate** from chart / equity heuristics. Treat it as **severity guidance**, not exact solver EV. For precise numbers, re-run the hand with `--postflop solver` and a solver adapter.
+
+---
+
+## Advanced: attach a real solver
+
+**You do not need a solver for normal use** — the default equity backend already flags obvious mistakes. Attach a solver only when you want a true CFR deep-solve on specific hands.
+
+<details>
+<summary><b>Set up TexasSolver (Windows, no build required)</b></summary>
+
+<br>
+
+poker-hand-review ships with an adapter for [TexasSolver](https://github.com/bupticybee/TexasSolver):
+
+1. Download TexasSolver's `console_solver` (bundled in the Windows release — no build needed).
+2. Point the adapter at it:
    ```powershell
-   n8-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
+   $env:TEXAS_SOLVER_CONSOLE = "C:\TexasSolver\console_solver.exe"
+   ```
+3. Run a hand through the bundled launcher:
+   ```powershell
+   poker-hand-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
    ```
 
-完整設定、調校參數與模型假設見 [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md)。
+To enable the solver inside the Web UI instead, start the server with `--solver-path`, or pick **Solver** and fill in the path field when loading a `.txt`.
+
+</details>
+
+<details>
+<summary><b>Solver environment variables</b></summary>
+
+<br>
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `TEXAS_SOLVER_CONSOLE` | Path to TexasSolver `console_solver(.exe)` | required |
+| `PHR_SOLVER_PATH` / `TEXAS_SOLVER_PATH` | Default adapter path, used instead of `--solver-path` | unset |
+| `PHR_SOLVER_THREADS` | CFR thread count | `8` |
+| `PHR_SOLVER_ACCURACY` | Exploitability target (% of pot) | `0.5` |
+| `PHR_SOLVER_MAX_ITER` | Maximum CFR iterations | `150` |
+| `PHR_SOLVER_TIMEOUT` | Per-solve timeout (seconds) | `300` |
+
+</details>
+
+Full setup, tuning knobs, and the modeling assumptions are documented in [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
 
 ---
 
-## ⚠️ 關於 EV 估計
+## Project layout
 
-未使用 solver 時，`ev_loss_bb` 是引擎的**估計值**（來自圖表 / equity 啟發法），請當作**嚴重度指引**，不是精確的 solver EV。要精確數字，請對該手用 `--postflop solver` 接上 solver adapter。
-
----
-
-## 🛠️ 開發
-
-```powershell
-pip install -e ".[dev]"   # 安裝開發相依（pytest / ruff / mypy）
-pytest                    # 測試
-ruff check src tests      # lint
-mypy src                  # 型別檢查
+```
+poker-hand-review/
+├── src/poker_hand_review/      core engine
+│   ├── parser/         hand-history text parsing
+│   ├── enrich/         Hero-view derivation (position, effective stack, decision nodes)
+│   ├── gto/            preflop GTO range charts
+│   ├── evaluate/       per-decision grading + pluggable postflop backends
+│   ├── analysis/       equity / stats / leak aggregation
+│   ├── profile/        opponent profiling
+│   └── report/         CLI colored output + JSON export
+├── web/                static Web UI (SPA) + local server endpoints
+├── docs/               solver adapter contract + translations
+├── data/               example hand histories
+├── tools/              TexasSolver adapter and chart import scripts
+└── tests/              tests
 ```
 
-需求：Python 3.11+。
-
 ---
 
-## 🤝 貢獻
-
-歡迎 issue 與 PR！送出前請先讀過這幾點，能讓 review 更順：
-
-**動手前**
-
-- 較大的改動建議**先開 issue 對齊方向**，再動手實作。
-
-**寫程式時**（詳見 [`CLAUDE.md`](CLAUDE.md)）
-
-- **保持簡單** —— 用最少的程式碼解決問題，不做沒被要求的抽象或設定彈性。
-- **外科手術式修改** —— 只動你必須動的，不順手重構或重排相鄰程式碼；配合既有風格。
-- **解析器的容忍原則不可破壞** —— 已知 token 嚴格解析，未知行進 `raw_unparsed` 警告但不中斷。
-- 註解**中英文皆可**，配合周圍既有風格即可。
-
-**送出前**
+## Development
 
 ```powershell
-pytest                 # 測試要綠
-ruff check src tests   # lint 要過
-mypy src               # 型別檢查（strict）要過
+pip install -e ".[dev]"   # install dev deps (pytest / ruff / mypy)
+pytest                    # tests
+ruff check src tests      # lint (line length 100)
+mypy src                  # type check (strict)
 ```
 
-- 改到評分、解析或匯出邏輯時，順手補一個能重現/驗證的測試。
-- 一個 PR 專注一件事；commit 訊息寫清楚「改了什麼、為什麼」。
-
-> 提醒：請只編輯 `CLAUDE.md`，`AGENTS.md` 會由 hook 自動同步。
+Requires Python 3.11+.
 
 ---
 
-## 📌 狀態
+## Contributing
 
-核心流程（M1–M7）已完成：解析、Hero 視角衍生、equity 後端、翻前評分、統計 / 漏洞 / 群像、JSON 匯出、Web UI，以及選用的外部 solver adapter。
+Issues and PRs are welcome. A few notes to keep reviews smooth:
+
+**Before you start**
+
+- For larger changes, open an issue first to align on direction before implementing.
+
+**While coding** (see [`CLAUDE.md`](CLAUDE.md))
+
+- **Keep it simple** — the minimum code that solves the problem; no abstractions or configurability that were not asked for.
+- **Make surgical changes** — touch only what you must; do not refactor or reformat adjacent code; match the existing style.
+- **Respect the parser's tolerance rule** — known tokens are parsed strictly; unknown lines go to `raw_unparsed` as a warning without aborting.
+- Comments may be in English or Chinese — match the surrounding style.
+
+**Before you submit**
+
+```powershell
+pytest                 # tests must be green
+ruff check src tests   # lint must pass
+mypy src               # type check (strict) must pass
+```
+
+- When changing grading, parsing, or export logic, add a test that reproduces or verifies the change.
+- Keep each PR focused on one thing, and write commit messages that explain *what* changed and *why*.
+
+> [!NOTE]
+> Edit `CLAUDE.md` only — `AGENTS.md` is auto-synced from it by a hook.
 
 ---
 
-## 📄 授權
+## Status and roadmap
 
-MIT License — 詳見 [`LICENSE`](LICENSE)。
+The core path (M1–M7) is implemented: parsing, Hero-view enrichment, the equity backend, preflop grading, stats / leaks / profiling, JSON export, the Web UI, and the optional external solver adapter.
+
+Not yet supported: poker sites other than the GG Network, and cash-game formats.
+
+---
+
+## License
+
+MIT License — see [`LICENSE`](LICENSE).

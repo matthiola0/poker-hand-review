@@ -39,7 +39,7 @@ class SolverBackend:
         timeout_sec: int = 120,
         solver_args: list[str] | tuple[str, ...] | None = None,
     ) -> None:
-        self.solver_path = solver_path or os.getenv("N8_REVIEW_SOLVER_PATH") or os.getenv(
+        self.solver_path = solver_path or os.getenv("PHR_SOLVER_PATH") or os.getenv(
             "TEXAS_SOLVER_PATH"
         )
         self.timeout_sec = timeout_sec
@@ -49,7 +49,7 @@ class SolverBackend:
         """以 Hero/對手範圍 + board 呼叫外部 solver adapter，回傳策略。"""
         if not self.solver_path:
             raise SolverBackendError(
-                "solver 後端需要 --solver-path，或設定 N8_REVIEW_SOLVER_PATH/TEXAS_SOLVER_PATH"
+                "solver 後端需要 --solver-path，或設定 PHR_SOLVER_PATH/TEXAS_SOLVER_PATH"
             )
 
         solver = Path(self.solver_path)
@@ -97,7 +97,7 @@ def _node_payload(node: PostflopNode) -> dict[str, Any]:
     data["candidate_actions"] = (
         ["fold", "call", "raise"] if node.to_call > 0 else ["check", "bet"]
     )
-    data["contract"] = "n8_review.solver_node.v1"
+    data["contract"] = "poker_hand_review.solver_node.v1"
     return data
 
 

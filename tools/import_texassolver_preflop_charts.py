@@ -1,8 +1,8 @@
-"""Import bundled TexasSolver preflop range presets into n8-review charts.
+"""Import bundled TexasSolver preflop range presets into poker-hand-review charts.
 
 This importer consumes the range text files shipped with TexasSolver's
 ``qb_ranges/100bb 2.5x 500rake`` pack and writes JSON files under
-``src/n8_review/gto/charts``. The result is an offline solver-derived chart
+``src/poker_hand_review/gto/charts``. The result is an offline solver-derived chart
 set for 100bb cash/rake spots. It is intentionally bucketed as ``60bb+`` so
 short-stack MTT spots continue to use their own charts or the built-in fallback.
 """
@@ -39,8 +39,8 @@ def main() -> None:
     parser.add_argument(
         "--out",
         type=Path,
-        default=Path("src/n8_review/gto/charts"),
-        help="n8-review chart output directory",
+        default=Path("src/poker_hand_review/gto/charts"),
+        help="poker-hand-review chart output directory",
     )
     args = parser.parse_args()
 

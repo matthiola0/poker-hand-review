@@ -20,7 +20,7 @@ _spec.loader.exec_module(adapter)
 
 def _node(**overrides):
     node = {
-        "contract": "n8_review.solver_node.v1",
+        "contract": "poker_hand_review.solver_node.v1",
         "street": "flop",
         "hero_hole": ["Ah", "Kh"],
         "board": ["As", "7d", "2c"],

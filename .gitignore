@@ -1,6 +1,8 @@
-# 手牌歷史（個人資料，不入版控）
-/data/
+# hand histories (personal data, not version-controlled) — keep only the sample template in data/
 *.txt
+data/*
+!data/sample.txt
+!data/README.md
 
 # Python
 __pycache__/
@@ -13,11 +15,14 @@ dist/
 .ruff_cache/
 .pytest_cache/
 
-# 匯出 / 產生的報告（大型，不入版控）
+# exports / generated reports (large, not version-controlled)
 out.json
 report.json
 report.*.json
 .gstack/
 
-# 設計文件（私有，不上傳）
+# design doc (private, not uploaded)
 docs/SDD.md
+
+# local personal settings (not version-controlled)
+.claude/settings.local.json

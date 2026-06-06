@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>n8-review</title>
+    <title>poker-hand-review</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -12,15 +12,26 @@
         <div class="brand">
           <div class="brand-mark">n8</div>
           <div>
-            <h1>n8-review</h1>
+            <h1>poker-hand-review</h1>
             <p id="schemaLabel">No report loaded</p>
           </div>
         </div>
         <div class="top-actions">
           <span class="honesty-note">EV loss is an engine estimate, not solver EV.</span>
-          <label class="file-button" title="Load JSON report">
-            <input id="fileInput" type="file" accept="application/json,.json" />
-            <span>Load JSON</span>
+          <select id="analyzeBackend" title="Postflop backend for .txt analysis">
+            <option value="equity">Equity</option>
+            <option value="solver">Solver</option>
+          </select>
+          <input
+            id="solverPathInput"
+            type="text"
+            placeholder="solver adapter path"
+            title="Solver adapter path (used when backend is Solver)"
+            disabled
+          />
+          <label class="file-button" title="Load a .txt hand history (analyzed on the server) or a .json report">
+            <input id="fileInput" type="file" accept=".txt,.json,application/json,text/plain" />
+            <span>Load txt / json</span>
           </label>
         </div>
       </header>
@@ -99,7 +110,7 @@
           <section class="review-panel" aria-label="Hand review">
             <div id="emptyState" class="empty-state">
               <strong>Load a JSON report</strong>
-              <span>Run n8-review analyze with --json, then open it here.</span>
+              <span>Run poker-hand-review analyze with --json, then open it here.</span>
             </div>
 
             <div id="reviewView" class="review-view hidden">

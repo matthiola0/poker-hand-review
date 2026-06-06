@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from n8_review.models import ActionType, Street
-from n8_review.parser import parse_hand, split_hands
+from poker_hand_review.models import ActionType, Street
+from poker_hand_review.parser import parse_hand, split_hands
 
 SAMPLE = """Poker Hand #TM6030071921: Tournament #287580360, Bounty Hunters Special $10.80 Hold'em No Limit - Level6(150/300(45)) - 2026/06/02 18:50:00
 Table '105' 8-max Seat #8 is the button

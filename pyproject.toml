@@ -1,5 +1,5 @@
 [project]
-name = "n8-review"
+name = "poker-hand-review"
 version = "0.1.0"
 description = "Natural8 / GGPoker 錦標賽手牌歷史分析與檢討工具"
 license = "MIT"
@@ -18,7 +18,7 @@ dev = [
 ]
 
 [project.scripts]
-n8-review = "n8_review.cli:app"
+poker-hand-review = "poker_hand_review.cli:app"
 
 [build-system]
 requires = ["setuptools>=77"]

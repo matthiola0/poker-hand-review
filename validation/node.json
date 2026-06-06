@@ -19,5 +19,5 @@
     "call",
     "raise"
   ],
-  "contract": "n8_review.solver_node.v1"
+  "contract": "poker_hand_review.solver_node.v1"
 }

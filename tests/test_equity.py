@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from n8_review.analysis import equity
-from n8_review.models import parse_cards
+from poker_hand_review.analysis import equity
+from poker_hand_review.models import parse_cards
 
 
 @pytest.mark.skip(reason="M3 待實作")

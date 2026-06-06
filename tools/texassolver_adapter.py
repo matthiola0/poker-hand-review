@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""TexasSolver adapter for n8-review's optional `solver` postflop backend.
+"""TexasSolver adapter for poker-hand-review's optional `solver` postflop backend.
 
 Implements the contract in docs/SOLVER_ADAPTER.md:
 
     python texassolver_adapter.py <node.json>      # -> strategy JSON on stdout
 
-Pipeline: read the n8-review node -> emit a TexasSolver console input file ->
-run console_solver -> parse the dumped game-tree JSON -> print n8-review
+Pipeline: read the poker-hand-review node -> emit a TexasSolver console input file ->
+run console_solver -> parse the dumped game-tree JSON -> print poker-hand-review
 strategy JSON to stdout.
 
-The n8-review core stays solver-agnostic; this file is the only place that knows
-TexasSolver's command syntax and output shape. Point n8-review at it with:
+The poker-hand-review core stays solver-agnostic; this file is the only place that knows
+TexasSolver's command syntax and output shape. Point poker-hand-review at it with:
 
-    n8-review hand <hh> --id <id> --postflop solver \\
+    poker-hand-review hand <hh> --id <id> --postflop solver \\
         --solver-path "python" ... (see docs: use a small wrapper, below)
 
 Because the core invokes `<solver-path> <input.json>` with no extra args, the
@@ -37,9 +37,9 @@ point of the solver backend, but it is an approximation of the real table spot
 
 Config via environment variables:
   TEXAS_SOLVER_CONSOLE  path to console_solver(.exe)   (required to actually solve)
-  N8_SOLVER_THREADS     thread count           (default 8)
-  N8_SOLVER_ACCURACY    exploitability target  (default 0.5, % of pot)
-  N8_SOLVER_MAX_ITER    max CFR iterations     (default 150)
+  PHR_SOLVER_THREADS     thread count           (default 8)
+  PHR_SOLVER_ACCURACY    exploitability target  (default 0.5, % of pot)
+  PHR_SOLVER_MAX_ITER    max CFR iterations     (default 150)
 
 CLI helper modes (do not need the binary):
   --dry-run <node.json>              print the generated TexasSolver input, exit
@@ -57,7 +57,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-CONTRACT = "n8_review.solver_node.v1"
+CONTRACT = "poker_hand_review.solver_node.v1"
 
 # villain_range_key -> a reasonable postflop continuing range (TexasSolver notation).
 # Coarse on purpose; these mirror the equity backend's range buckets.
@@ -78,7 +78,7 @@ VILLAIN_RANGES: dict[str, str] = {
 }
 DEFAULT_RANGE_KEY = "balanced"
 
-# Aggregate TexasSolver action labels into n8-review's vocabulary.
+# Aggregate TexasSolver action labels into poker-hand-review's vocabulary.
 #   facing a bet (to_call > 0): fold / call / raise
 #   no bet      (to_call == 0): check / bet
 AGG_FACING_BET = {"FOLD": "fold", "CALL": "call", "RAISE": "raise", "ALLIN": "raise"}
@@ -150,9 +150,9 @@ def _build_input(node: dict[str, Any], dump_path: str) -> tuple[str, str]:
         start_pot = pot_total
         oop_bet_line = f"set_bet_sizes oop,{_street(node)},bet,50"
 
-    threads = os.getenv("N8_SOLVER_THREADS", "8")
-    accuracy = os.getenv("N8_SOLVER_ACCURACY", "0.5")
-    max_iter = os.getenv("N8_SOLVER_MAX_ITER", "150")
+    threads = os.getenv("PHR_SOLVER_THREADS", "8")
+    accuracy = os.getenv("PHR_SOLVER_ACCURACY", "0.5")
+    max_iter = os.getenv("PHR_SOLVER_MAX_ITER", "150")
     street = _street(node)
 
     lines = [
@@ -258,7 +258,7 @@ def _run_solver(node: dict[str, Any]) -> dict[str, Any]:
             cwd=str(console_path.parent),  # TexasSolver loads ./resources relative to binary
             capture_output=True,
             encoding="utf-8",
-            timeout=int(os.getenv("N8_SOLVER_TIMEOUT", "300")),
+            timeout=int(os.getenv("PHR_SOLVER_TIMEOUT", "300")),
             check=False,
         )
     except subprocess.TimeoutExpired:

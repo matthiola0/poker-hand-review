@@ -12,7 +12,7 @@ class Config:
     hero: str = "Hero"
     mc_samples: int = 500
     postflop_backend: str = "equity"     # "equity"（預設）| "solver"（外部 adapter）
-    solver_path: str | None = None       # 也可用 N8_REVIEW_SOLVER_PATH/TEXAS_SOLVER_PATH
+    solver_path: str | None = None       # 也可用 PHR_SOLVER_PATH/TEXAS_SOLVER_PATH
     color: bool = True
     thresholds: QualityThresholds = field(default_factory=QualityThresholds)
 

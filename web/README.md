@@ -1,13 +1,13 @@
 # Web UI
 
-M6 static SPA for n8-review reports. It reads the JSON contract emitted by
-`n8-review analyze --json` and needs no backend or build step.
+M6 static SPA for poker-hand-review reports. It reads the JSON contract emitted by
+`poker-hand-review analyze --json` and needs no backend or build step.
 
 ## Generate a report
 
 ```powershell
 $env:PYTHONPATH='src'
-python -m n8_review.cli analyze data --json report.json
+python -m poker_hand_review.cli analyze data --json report.json
 ```
 
 ## Open the UI
@@ -23,10 +23,10 @@ http://localhost:8000/web/index.html?report=report.json
 ## Run solver from the UI
 
 Directly opening `index.html` cannot execute a local solver process. Use the
-local n8-review server:
+local poker-hand-review server:
 
 ```powershell
-n8-review web --report report.json --solver-path C:\path\solver-adapter.exe
+poker-hand-review web --report report.json --solver-path C:\path\solver-adapter.exe
 ```
 
 Postflop Hero decisions will show a `Run solver` button. The button calls the

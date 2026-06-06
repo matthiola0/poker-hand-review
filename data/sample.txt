@@ -1,0 +1,112 @@
+Poker Hand #TM9000000001: Tournament #900000000, Sample Bounty Hunters $1.00 Hold'em No Limit - Level1(50/100(10)) - 2026/01/01 12:00:00
+Table '1' 8-max Seat #8 is the button
+Seat 1: aaaa1111 (10,000 in chips)
+Seat 2: bbbb2222 (10,000 in chips)
+Seat 3: cccc3333 (10,000 in chips)
+Seat 4: dddd4444 (10,000 in chips)
+Seat 5: Hero (10,000 in chips)
+Seat 6: eeee5555 (10,000 in chips)
+Seat 7: ffff6666 (10,000 in chips)
+Seat 8: hhhh8888 (10,000 in chips)
+aaaa1111: posts the ante 10
+bbbb2222: posts the ante 10
+cccc3333: posts the ante 10
+dddd4444: posts the ante 10
+Hero: posts the ante 10
+eeee5555: posts the ante 10
+ffff6666: posts the ante 10
+hhhh8888: posts the ante 10
+aaaa1111: posts small blind 50
+bbbb2222: posts big blind 100
+*** HOLE CARDS ***
+Dealt to aaaa1111
+Dealt to bbbb2222
+Dealt to cccc3333
+Dealt to dddd4444
+Dealt to Hero [Ah Kd]
+Dealt to eeee5555
+Dealt to ffff6666
+Dealt to hhhh8888
+cccc3333: raises 150 to 250
+dddd4444: folds
+Hero: calls 250
+eeee5555: folds
+ffff6666: folds
+hhhh8888: folds
+aaaa1111: folds
+bbbb2222: calls 150
+*** FLOP *** [Kh 7s 2d]
+bbbb2222: checks
+cccc3333: bets 300
+Hero: calls 300
+bbbb2222: folds
+*** TURN *** [Kh 7s 2d] [9c]
+cccc3333: checks
+Hero: checks
+*** RIVER *** [Kh 7s 2d 9c] [4h]
+cccc3333: checks
+Hero: bets 500
+cccc3333: calls 500
+*** SHOWDOWN ***
+Hero collected 2,480 from pot
+*** SUMMARY ***
+Total pot 2,480 | Rake 0 | Jackpot 0 | Bingo 0 | Fortune 0 | Tax 0
+Board [Kh 7s 2d 9c 4h]
+Seat 1: aaaa1111 (small blind) folded before Flop
+Seat 2: bbbb2222 (big blind) folded on the Flop
+Seat 3: cccc3333 showed [Qs Qh] and lost with a pair of Queens
+Seat 4: dddd4444 folded before Flop
+Seat 5: Hero showed [Ah Kd] and won (2,480) with a pair of Kings
+Seat 6: eeee5555 folded before Flop
+Seat 7: ffff6666 folded before Flop
+Seat 8: hhhh8888 (button) folded before Flop
+
+Poker Hand #TM9000000002: Tournament #900000000, Sample Bounty Hunters $1.00 Hold'em No Limit - Level1(50/100(10)) - 2026/01/01 12:03:00
+Table '1' 8-max Seat #1 is the button
+Seat 1: aaaa1111 (9,990 in chips)
+Seat 2: bbbb2222 (9,640 in chips)
+Seat 3: cccc3333 (9,140 in chips)
+Seat 4: dddd4444 (9,990 in chips)
+Seat 5: Hero (11,990 in chips)
+Seat 6: eeee5555 (9,990 in chips)
+Seat 7: ffff6666 (9,990 in chips)
+Seat 8: hhhh8888 (9,990 in chips)
+aaaa1111: posts the ante 10
+bbbb2222: posts the ante 10
+cccc3333: posts the ante 10
+dddd4444: posts the ante 10
+Hero: posts the ante 10
+eeee5555: posts the ante 10
+ffff6666: posts the ante 10
+hhhh8888: posts the ante 10
+bbbb2222: posts small blind 50
+cccc3333: posts big blind 100
+*** HOLE CARDS ***
+Dealt to aaaa1111
+Dealt to bbbb2222
+Dealt to cccc3333
+Dealt to dddd4444
+Dealt to Hero [7d 2c]
+Dealt to eeee5555
+Dealt to ffff6666
+Dealt to hhhh8888
+dddd4444: folds
+Hero: folds
+eeee5555: raises 150 to 250
+ffff6666: folds
+hhhh8888: folds
+aaaa1111: folds
+bbbb2222: folds
+cccc3333: folds
+Uncalled bet (150) returned to eeee5555
+eeee5555 collected 330 from pot
+*** SUMMARY ***
+Total pot 330 | Rake 0 | Jackpot 0 | Bingo 0 | Fortune 0 | Tax 0
+Seat 1: aaaa1111 (button) folded before Flop
+Seat 2: bbbb2222 (small blind) folded before Flop
+Seat 3: cccc3333 (big blind) folded before Flop
+Seat 4: dddd4444 folded before Flop
+Seat 5: Hero folded before Flop
+Seat 6: eeee5555 collected (330)
+Seat 7: ffff6666 folded before Flop
+Seat 8: hhhh8888 folded before Flop

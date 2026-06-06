@@ -8,16 +8,16 @@ import sys
 
 import pytest
 
-from n8_review.analysis.equity import EquityResult, equity_vs_hand
-from n8_review.analysis.stats import compute_stats
-from n8_review.enrich import build_context
-from n8_review.evaluate import DecisionEvaluator
-from n8_review.evaluate.postflop import EquityBackend, PostflopNode, SolverBackend, SolverBackendError
-from n8_review.gto import preflop_charts
-from n8_review.gto.preflop_charts import ChartKey, lookup_with_detail
-from n8_review.models import GtoSuggestion, Position, Street, parse_cards
-from n8_review.parser import parse_hand
-from n8_review.web_server import WebServerConfig, solve_payload
+from poker_hand_review.analysis.equity import EquityResult, equity_vs_hand
+from poker_hand_review.analysis.stats import compute_stats
+from poker_hand_review.enrich import build_context
+from poker_hand_review.evaluate import DecisionEvaluator
+from poker_hand_review.evaluate.postflop import EquityBackend, PostflopNode, SolverBackend, SolverBackendError
+from poker_hand_review.gto import preflop_charts
+from poker_hand_review.gto.preflop_charts import ChartKey, lookup_with_detail
+from poker_hand_review.models import GtoSuggestion, Position, Street, parse_cards
+from poker_hand_review.parser import parse_hand
+from poker_hand_review.web_server import WebServerConfig, solve_payload
 
 
 RFI_COLLECT = """Poker Hand #TMRFI: Tournament #1, Test $1 Hold'em No Limit - Level1(10/20(10)) - 2026/06/02 18:50:00
@@ -123,7 +123,7 @@ def test_equity_backend_respects_configured_sample_count(monkeypatch):
         return EquityResult(win=0.7, tie=0.0, lose=0.3, samples=samples, exact=False)
 
     monkeypatch.setattr(
-        "n8_review.evaluate.postflop.equity_backend.equity_vs_range",
+        "poker_hand_review.evaluate.postflop.equity_backend.equity_vs_range",
         fake_equity_vs_range,
     )
     backend = EquityBackend(mc_samples=777)
@@ -230,7 +230,7 @@ def test_equity_backend_changes_candidate_range_by_profile_key(monkeypatch):
         return EquityResult(win=0.5, tie=0.0, lose=0.5, samples=1, exact=False)
 
     monkeypatch.setattr(
-        "n8_review.evaluate.postflop.equity_backend.equity_vs_range",
+        "poker_hand_review.evaluate.postflop.equity_backend.equity_vs_range",
         fake_equity_vs_range,
     )
     backend = EquityBackend(mc_samples=1)
@@ -279,7 +279,7 @@ def test_solver_backend_calls_external_adapter_and_parses_strategy(tmp_path):
     suggestion = backend.evaluate(node)
     payload = json.loads(capture_path.read_text(encoding="utf-8"))
 
-    assert payload["contract"] == "n8_review.solver_node.v1"
+    assert payload["contract"] == "poker_hand_review.solver_node.v1"
     assert payload["candidate_actions"] == ["fold", "call", "raise"]
     assert payload["villain_range_key"] == "tight"
     assert suggestion.best_action == "call"
@@ -288,7 +288,7 @@ def test_solver_backend_calls_external_adapter_and_parses_strategy(tmp_path):
 
 
 def test_solver_backend_requires_solver_path(monkeypatch):
-    monkeypatch.delenv("N8_REVIEW_SOLVER_PATH", raising=False)
+    monkeypatch.delenv("PHR_SOLVER_PATH", raising=False)
     monkeypatch.delenv("TEXAS_SOLVER_PATH", raising=False)
     backend = SolverBackend(solver_path=None)
     node = PostflopNode(
