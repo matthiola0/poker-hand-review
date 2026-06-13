@@ -46,7 +46,28 @@ UNCALLED = re.compile(r"^Uncalled bet \((?P<amt>[\d,]+)\) returned to (?P<player
 # SUMMARY
 TOTAL_POT = re.compile(r"^Total pot (?P<amt>[\d,]+)")
 SUMMARY_BOARD = re.compile(r"^Board \[(?P<cards>[^\]]+)\]")
-SUMMARY_SEAT = re.compile(r"^Seat (?P<seat>\d+): (?P<player>.+?) (?P<rest>.+)$")
+_SUMMARY_POSITION = r"(?: \((?:button|small blind|big blind)\))?"
+SUMMARY_SHOWED = re.compile(
+    r"^Seat (?P<seat>\d+): (?P<player>.+?)"
+    + _SUMMARY_POSITION
+    + r" showed \[(?P<cards>[^\]]+)\] and "
+    r"(?:(?:won \((?P<won>[\d,]+)\))|lost)(?: with (?P<rank>.+))?$"
+)
+SUMMARY_MUCKED = re.compile(
+    r"^Seat (?P<seat>\d+): (?P<player>.+?)"
+    + _SUMMARY_POSITION
+    + r" mucked(?: \[(?P<cards>[^\]]+)\])?$"
+)
+SUMMARY_FOLDED = re.compile(
+    r"^Seat (?P<seat>\d+): (?P<player>.+?)"
+    + _SUMMARY_POSITION
+    + r" folded (?:before Flop|on the (?:Flop|Turn|River))$"
+)
+SUMMARY_COLLECTED = re.compile(
+    r"^Seat (?P<seat>\d+): (?P<player>.+?)"
+    + _SUMMARY_POSITION
+    + r" collected \((?P<amt>[\d,]+)\)$"
+)
 
 
 def to_int(s: str) -> int:
