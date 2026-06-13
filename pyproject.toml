@@ -3,10 +3,10 @@ name = "poker-hand-review"
 version = "0.1.0"
 description = "Natural8 / GGPoker 錦標賽手牌歷史分析與檢討工具"
 authors = [
-    { name = "Boy", email = "matthiola020@gmail.com" },
+    { name = "Boy", email = "abc35100762@gmail.com" },
 ]
 maintainers = [
-    { name = "Boy", email = "matthiola020@gmail.com" },
+    { name = "Boy", email = "abc35100762@gmail.com" },
 ]
 readme = "README.md"
 license = "MIT"
