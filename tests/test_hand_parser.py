@@ -65,6 +65,10 @@ def test_total_pot_and_showdown():
     assert hand.total_pot == 22076
     villain = [s for s in hand.showdowns if s.player == "e49622c3"]
     assert villain and villain[0].won == 22076
+    hero = [s for s in hand.showdowns if s.player == "Hero"]
+    assert hero and hero[0].won == 0
+    assert hero[0].hand_rank_text == "three of a kind, Sixes"
+    assert hand.raw_unparsed == ()
 
 
 def test_amount_comma_stripped():
@@ -77,3 +81,64 @@ def test_amount_comma_stripped():
 def test_split_hands_counts_blocks():
     doubled = SAMPLE + "\n\n" + SAMPLE.replace("TM6030071921", "TM6030071922")
     assert len(split_hands(doubled)) == 2
+
+
+def _with_summary(*summary_lines: str):
+    prefix = SAMPLE.split("*** SUMMARY ***", 1)[0]
+    return parse_hand(
+        prefix
+        + "*** SUMMARY ***\n"
+        + "Total pot 22,076 | Rake 0 | Jackpot 0\n"
+        + "Board [Ah 6h Qs 7d Tc]\n"
+        + "\n".join(summary_lines)
+        + "\n"
+    )
+
+
+def test_summary_mucked_with_cards_is_a_showdown_result():
+    hand = _with_summary("Seat 5: Hero mucked [6s 6d]")
+
+    assert len(hand.showdowns) == 1
+    assert hand.showdowns[0].player == "Hero"
+    assert [str(card) for card in hand.showdowns[0].hole or ()] == ["6s", "6d"]
+    assert hand.showdowns[0].mucked is True
+    assert hand.raw_unparsed == ()
+
+
+def test_summary_mucked_without_cards_and_folded_lines_are_known_non_showdowns():
+    hand = _with_summary(
+        "Seat 1: 4b49ee9d mucked",
+        "Seat 2: player two folded before Flop",
+        "Seat 3: player three folded on the Flop",
+        "Seat 4: player four folded on the Turn",
+        "Seat 6: player six folded on the River",
+    )
+
+    assert hand.showdowns == ()
+    assert hand.raw_unparsed == ()
+
+
+def test_summary_collect_without_cards_does_not_create_showdown():
+    hand = _with_summary("Seat 5: Hero collected (22,076)")
+
+    assert hand.showdowns == ()
+    assert hand.raw_unparsed == ()
+
+
+def test_unknown_summary_variant_is_preserved_without_aborting():
+    line = "Seat 5: Hero revealed a mystery result"
+    hand = _with_summary(line)
+
+    assert hand.raw_unparsed == (line,)
+
+
+def test_multiway_summary_supports_position_markers_and_multiword_players():
+    hand = _with_summary(
+        "Seat 1: first player (button) showed [As Ac] and won (22,076) with three of a kind, Aces",
+        "Seat 3: second player (small blind) showed [Kh Kc] and lost with two pair, Kings and Sixes",
+        "Seat 5: Hero showed [6s 6d] and lost with three of a kind, Sixes",
+    )
+
+    assert [result.player for result in hand.showdowns] == ["first player", "second player", "Hero"]
+    assert [result.won for result in hand.showdowns] == [22076, 0, 0]
+    assert hand.raw_unparsed == ()

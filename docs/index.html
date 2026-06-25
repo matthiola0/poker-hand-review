@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="poker-hand-review grades Natural8 and GGPoker tournament hand histories from the Hero perspective, with GTO-style decision labels, leaks, replay, and opponent profiling."
+    />
+    <title>poker-hand-review | GTO hand history review</title>
+    <link rel="stylesheet" href="./landing.css" />
+  </head>
+  <body>
+    <header class="site-header" aria-label="Site navigation">
+      <a class="brand" href="#top" aria-label="poker-hand-review home">
+        <span class="brand-mark">n8</span>
+        <span>poker-hand-review</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#hud">HUD analyzer</a>
+        <a href="#start">Start</a>
+        <a href="https://github.com/matthiola0/poker-hand-review">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="Project introduction">
+        <div class="hero-backdrop" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Natural8 / GGPoker tournament review</p>
+          <h1>Review poker hands like a chess engine.</h1>
+          <p class="hero-copy">
+            Upload hand histories, isolate every Hero decision, and see which actions are fine,
+            inaccurate, or costly against GTO-informed strategy.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="https://github.com/matthiola0/poker-hand-review">
+              View project
+            </a>
+            <a class="secondary-link" href="#hud">Try the HUD analyzer</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="intro-band" aria-label="Project summary">
+        <div class="intro-grid">
+          <div>
+            <p class="section-kicker">What it does</p>
+            <h2>Turn raw tournament hand histories into a playable review session.</h2>
+          </div>
+          <div class="summary-list">
+            <p>
+              The engine parses Natural8 and GGPoker tournament exports, rebuilds the Hero view,
+              grades each decision, and exports a JSON report for the browser UI.
+            </p>
+            <p>
+              Preflop decisions use range-chart lookup. Postflop decisions use fast equity and EV
+              heuristics by default, with an optional external solver adapter for deeper review.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-band" aria-label="Product highlights">
+        <div class="feature-grid">
+          <article class="feature-item">
+            <span class="feature-number">01</span>
+            <h3>Decision grading</h3>
+            <p>Every Hero action is labeled as good, inaccuracy, mistake, or unknown.</p>
+          </article>
+          <article class="feature-item">
+            <span class="feature-number">02</span>
+            <h3>Street replay</h3>
+            <p>Replay the table, board, stacks, actions, and Hero decisions street by street.</p>
+          </article>
+          <article class="feature-item">
+            <span class="feature-number">03</span>
+            <h3>Leak tracking</h3>
+            <p>Aggregate recurring mistakes by position, street, and EV-loss severity.</p>
+          </article>
+          <article class="feature-item">
+            <span class="feature-number">04</span>
+            <h3>Opponent profiling</h3>
+            <p>Track VPIP, PFR, 3Bet tendencies, tags, and assumed ranges for regular opponents.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="screenshot-band" aria-label="Web UI screenshot">
+        <div class="screenshot-copy">
+          <p class="section-kicker">Browser review</p>
+          <h2>The review UI is static, fast, and report-driven.</h2>
+          <p>
+            Open a generated JSON report in the browser, filter hands, inspect mistakes, and drill
+            into action timelines without a database or build step.
+          </p>
+        </div>
+        <a class="screenshot-frame" href="./screenshots/hero.png">
+          <img src="./screenshots/hero.png" alt="poker-hand-review web interface" />
+        </a>
+      </section>
+
+      <section id="how-it-works" class="workflow-band" aria-label="How it works">
+        <div class="section-heading">
+          <p class="section-kicker">Pipeline</p>
+          <h2>From hand history text to GTO-style feedback.</h2>
+        </div>
+        <div class="workflow">
+          <div class="workflow-step">
+            <strong>Parse</strong>
+            <span>Read Natural8 / GGPoker tournament .txt files.</span>
+          </div>
+          <div class="workflow-step">
+            <strong>Enrich</strong>
+            <span>Derive position, effective stack, M, and Hero decision nodes.</span>
+          </div>
+          <div class="workflow-step">
+            <strong>Grade</strong>
+            <span>Compare decisions with chart, equity, or optional solver advice.</span>
+          </div>
+          <div class="workflow-step">
+            <strong>Review</strong>
+            <span>Export a JSON report and inspect it in the web interface.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="hud" class="hud-band" aria-label="HUD tendency analyzer">
+        <div class="hud-copy">
+          <p class="section-kicker">HUD tendency analyzer</p>
+          <h2>Classify an opponent profile before choosing an exploit.</h2>
+          <p>
+            Use VPIP, PFR, ATS, and 3Bet to estimate a player type. This is a heuristic companion
+            to the review engine, not a solver result. Small samples should be treated cautiously.
+          </p>
+        </div>
+
+        <div class="hud-tool" data-hud-tool>
+          <div class="hud-controls" aria-label="HUD stat sliders">
+            <label class="hud-control" for="hud-hands">
+              <span>Hands</span>
+              <input id="hud-hands" type="range" min="0" max="500" step="10" value="120" />
+              <output id="hud-hands-value" for="hud-hands">120</output>
+            </label>
+            <label class="hud-control" for="hud-vpip">
+              <span>VPIP</span>
+              <input id="hud-vpip" type="range" min="0" max="100" value="20" />
+              <output id="hud-vpip-value" for="hud-vpip">20%</output>
+            </label>
+            <label class="hud-control" for="hud-pfr">
+              <span>PFR</span>
+              <input id="hud-pfr" type="range" min="0" max="100" value="15" />
+              <output id="hud-pfr-value" for="hud-pfr">15%</output>
+            </label>
+            <label class="hud-control" for="hud-ats">
+              <span>ATS</span>
+              <input id="hud-ats" type="range" min="0" max="100" value="30" />
+              <output id="hud-ats-value" for="hud-ats">30%</output>
+            </label>
+            <label class="hud-control" for="hud-three-bet">
+              <span>3Bet</span>
+              <input id="hud-three-bet" type="range" min="0" max="100" value="5" />
+              <output id="hud-three-bet-value" for="hud-three-bet">5%</output>
+            </label>
+          </div>
+
+          <div class="hud-results" aria-live="polite">
+            <div class="hud-type-row">
+              <span id="hud-confidence" class="confidence-badge">Medium confidence</span>
+              <h3 id="hud-player-type">TAG</h3>
+            </div>
+            <div class="hud-result-grid">
+              <section class="hud-result">
+                <h4>Core read</h4>
+                <p id="hud-player-desc">Solid entering range with controlled aggression.</p>
+              </section>
+              <section class="hud-result">
+                <h4>Exploit plan</h4>
+                <p id="hud-player-strategy">
+                  Avoid thin out-of-position battles and respect strong preflop pressure.
+                </p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="start" class="start-band" aria-label="Getting started">
+        <div>
+          <p class="section-kicker">Run locally</p>
+          <h2>Analyze real hand histories on your machine.</h2>
+        </div>
+        <div class="command-block" aria-label="Install and run commands">
+          <code>python -m venv .venv</code>
+          <code>.venv\Scripts\activate</code>
+          <code>pip install -e .</code>
+          <code>poker-hand-review web</code>
+        </div>
+        <p class="start-note">
+          GitHub Pages can show this project page and load existing JSON reports. Local .txt
+          analysis and solver execution require the Python server.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>MIT licensed.</span>
+      <a href="https://github.com/matthiola0/poker-hand-review">Source on GitHub</a>
+    </footer>
+
+    <script src="./landing.js"></script>
+  </body>
+</html>

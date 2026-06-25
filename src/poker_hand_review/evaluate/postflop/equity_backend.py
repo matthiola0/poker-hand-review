@@ -29,37 +29,62 @@ class EquityBackend:
             samples=max(1, self.mc_samples),
         )
         equity = result.win + result.tie * 0.5
+        range_key = node.villain_range_key or "balanced"
+        required = pot_odds(node.to_call, node.pot_before) if node.to_call > 0 else None
+        equity_edge = equity - required if required is not None else None
+        call_ev_bb = (
+            equity_edge * (node.pot_before + node.to_call) / max(node.bb, 1)
+            if equity_edge is not None
+            else None
+        )
+        detail: dict[str, object] = {
+            "estimated_equity": equity,
+            "required_equity": required,
+            "equity_edge": equity_edge,
+            "estimated_call_ev_bb": call_ev_bb,
+            "villain_range_key": range_key,
+            "villain_combo_count": len(villain_range),
+            "mc_samples_requested": max(1, self.mc_samples),
+            "samples_evaluated": result.samples,
+            "estimate_kind": "heuristic_severity_not_solver_ev",
+        }
+        actions: tuple[tuple[str, float], ...]
 
         if node.to_call > 0:
-            required = pot_odds(node.to_call, node.pot_before)
-            if equity >= required + 0.12:
-                return GtoSuggestion(
-                    actions=(("raise", 0.25), ("call", 0.75)),
-                    best_action="call",
-                    source="equity_backend",
-                )
-            if equity >= required - 0.03:
-                return GtoSuggestion(
-                    actions=(("call", 0.75), ("fold", 0.25)),
-                    best_action="call",
-                    source="equity_backend",
-                )
+            assert required is not None
+            if equity >= required + 0.15:
+                actions = (("call", 0.70), ("raise", 0.30))
+                best = "call"
+            elif equity >= required + 0.03:
+                actions = (("call", 0.90), ("fold", 0.10))
+                best = "call"
+            elif equity >= required - 0.02:
+                actions = (("call", 0.60), ("fold", 0.40))
+                best = "call"
+            else:
+                actions = (("fold", 1.0),)
+                best = "fold"
             return GtoSuggestion(
-                actions=(("fold", 1.0),),
-                best_action="fold",
+                actions=actions,
+                best_action=best,
                 source="equity_backend",
+                detail=detail,
             )
 
-        if equity >= 0.62:
-            return GtoSuggestion(
-                actions=(("bet", 0.7), ("check", 0.3)),
-                best_action="bet",
-                source="equity_backend",
-            )
+        if equity >= 0.68:
+            actions = (("bet", 0.80), ("check", 0.20))
+            best = "bet"
+        elif equity >= 0.55:
+            actions = (("bet", 0.60), ("check", 0.40))
+            best = "bet"
+        else:
+            actions = (("check", 1.0),)
+            best = "check"
         return GtoSuggestion(
-            actions=(("check", 1.0),),
-            best_action="check",
+            actions=actions,
+            best_action=best,
             source="equity_backend",
+            detail=detail,
         )
 
 

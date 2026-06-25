@@ -74,7 +74,8 @@ def parse_hand(block: str, hero_name: str = "Hero") -> Hand:
             continue
 
         if in_summary:
-            _parse_summary(line, total_pot, showdowns, raw_unparsed)
+            if not _parse_summary(line, showdowns):
+                raw_unparsed.append(line)
             if mt := P.TOTAL_POT.match(line):
                 total_pot = P.to_int(mt.group("amt"))
             continue
@@ -196,22 +197,33 @@ def _parse_action(line: str) -> Action | None:
     return None
 
 
-def _parse_summary(
-    line: str, total_pot: int, showdowns: list[ShowdownResult], raw: list[str]
-) -> None:
-    """解析 SUMMARY 區的 'Seat N: player ...' 攤牌結果。
-
-    TODO(M1): 完整解析 'showed [..] and won (X) with <牌型>' / 'and lost with'
-    / 'mucked' / 'folded ...'，填入 showdowns。目前僅擷取已亮牌者。
-    """
-    if m := P.SUMMARY_SEAT.match(line):
-        rest = m.group("rest")
-        if "showed [" in rest:
-            cards_part = rest.split("showed [", 1)[1].split("]", 1)[0]
-            won = 0
-            if "won (" in rest:
-                won = P.to_int(rest.split("won (", 1)[1].split(")", 1)[0])
-            rank = rest.split(" with ", 1)[1] if " with " in rest else ""
-            showdowns.append(
-                ShowdownResult(m.group("player"), parse_cards(cards_part), won, rank)
+def _parse_summary(line: str, showdowns: list[ShowdownResult]) -> bool:
+    """Parse known SUMMARY variants; return False so unknown lines stay visible."""
+    if P.TOTAL_POT.match(line) or P.SUMMARY_BOARD.match(line):
+        return True
+    if m := P.SUMMARY_SHOWED.match(line):
+        showdowns.append(
+            ShowdownResult(
+                m.group("player"),
+                parse_cards(m.group("cards")),
+                P.to_int(m.group("won") or "0"),
+                m.group("rank") or "",
             )
+        )
+        return True
+    if m := P.SUMMARY_MUCKED.match(line):
+        cards = m.group("cards")
+        if cards:
+            showdowns.append(
+                ShowdownResult(
+                    m.group("player"),
+                    parse_cards(cards),
+                    0,
+                    "",
+                    mucked=True,
+                )
+            )
+        return True
+    if P.SUMMARY_FOLDED.match(line) or P.SUMMARY_COLLECTED.match(line):
+        return True
+    return False

@@ -2,7 +2,24 @@
 name = "poker-hand-review"
 version = "0.1.0"
 description = "Natural8 / GGPoker 錦標賽手牌歷史分析與檢討工具"
+authors = [
+    { name = "Boy", email = "abc35100762@gmail.com" },
+]
+maintainers = [
+    { name = "Boy", email = "abc35100762@gmail.com" },
+]
+readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["poker", "gto", "hand-history", "ggpoker", "natural8", "tournament"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
 requires-python = ">=3.11"
 dependencies = [
     "typer>=0.12",
@@ -19,6 +36,11 @@ dev = [
 
 [project.scripts]
 poker-hand-review = "poker_hand_review.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/matthiola0/poker-hand-review"
+Repository = "https://github.com/matthiola0/poker-hand-review"
+Issues = "https://github.com/matthiola0/poker-hand-review/issues"
 
 [build-system]
 requires = ["setuptools>=77"]

@@ -178,14 +178,73 @@ def _postflop_ev_loss(decision: Decision, suggestion: GtoSuggestion, bb: int) ->
     suggested = {action for action, freq in suggestion.actions if freq > 0.0}
     if hero in suggested or hero == suggestion.best_action:
         return 0.0
+    equity = _detail_float(suggestion, "estimated_equity")
+    required = _detail_float(suggestion, "required_equity")
+    if suggestion.source == "equity_backend" and equity is not None:
+        if decision.to_call and required is not None:
+            call_ev_bb = (
+                (equity - required)
+                * (decision.pot_before + decision.to_call)
+                / max(bb, 1)
+            )
+            if hero == "fold":
+                return min(5.0, max(0.0, call_ev_bb))
+            if hero == "call":
+                return min(5.0, max(0.0, -call_ev_bb))
+            if hero in {"bet", "raise"}:
+                risk_bb = max(
+                    decision.hero_action.amount,
+                    decision.hero_action.to_amount,
+                    decision.to_call,
+                ) / max(bb, 1)
+                if suggestion.best_action == "fold":
+                    return min(
+                        5.0,
+                        max(-call_ev_bb, risk_bb * (0.5 + max(0.0, required - equity))),
+                    )
+                return min(5.0, max(0.5, risk_bb * 0.35))
+        if hero in {"bet", "raise"} and suggestion.best_action == "check":
+            risk_bb = max(
+                decision.hero_action.amount,
+                decision.hero_action.to_amount,
+                decision.pot_before // 2,
+            ) / max(bb, 1)
+            return min(5.0, max(0.5, risk_bb * (0.5 + max(0.0, 0.55 - equity))))
+        if hero == "check" and suggestion.best_action == "bet":
+            opportunity_bb = decision.pot_before / max(bb, 1)
+            return min(5.0, max(0.5, opportunity_bb * max(0.0, equity - 0.55)))
     if decision.to_call:
         return min(3.0, max(0.5, decision.to_call / max(bb, 1) * 0.75))
     return 0.8
+
+
+def _detail_float(suggestion: GtoSuggestion, key: str) -> float | None:
+    value = suggestion.detail.get(key)
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
 
 
 def _explain(decision: Decision, suggestion: GtoSuggestion, ev_loss: float) -> str:
     if suggestion.best_action == "unknown":
         return "資訊不足，暫不評分"
     if ev_loss < 0.01:
+        if suggestion.source == "equity_backend":
+            return _explain_equity(suggestion, aligned=True, ev_loss=ev_loss)
         return f"符合目前 {suggestion.source} 建議"
+    if suggestion.source == "equity_backend":
+        return _explain_equity(suggestion, aligned=False, ev_loss=ev_loss)
     return f"建議 {suggestion.best_action}；目前動作偏離約 {ev_loss:.2f}bb"
+
+
+def _explain_equity(suggestion: GtoSuggestion, *, aligned: bool, ev_loss: float) -> str:
+    equity = _detail_float(suggestion, "estimated_equity")
+    required = _detail_float(suggestion, "required_equity")
+    range_key = suggestion.detail.get("villain_range_key", "balanced")
+    equity_text = f"estimated equity {equity:.1%}" if equity is not None else "estimated equity unavailable"
+    required_text = f" vs {required:.1%} required" if required is not None else ""
+    verdict = "action aligns" if aligned else f"recommend {suggestion.best_action}"
+    return (
+        f"{equity_text}{required_text} against {range_key} range; {verdict}. "
+        f"Severity estimate {ev_loss:.2f}bb; not exact solver EV."
+    )

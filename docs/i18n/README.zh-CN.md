@@ -3,6 +3,7 @@
 [English](../../README.md) | [繁體中文](README.zh-TW.md) | **简体中文**
 
 <p align="center">
+  <a href="https://github.com/matthiola0/poker-hand-review/actions/workflows/ci.yml"><img src="https://github.com/matthiola0/poker-hand-review/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/version-0.1.0-blue" alt="version 0.1.0">
   <img src="https://img.shields.io/badge/platform-Windows_/_PowerShell-0078D6?logo=windows&logoColor=white" alt="platform">
