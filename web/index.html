@@ -13,56 +13,85 @@
           <div class="brand-mark">n8</div>
           <div>
             <h1>poker-hand-review</h1>
-            <p id="schemaLabel">No report loaded</p>
+            <p id="schemaLabel" data-i18n="schema.noReport">No report loaded</p>
           </div>
         </div>
         <div class="top-actions">
-          <span class="honesty-note">EV loss is an engine estimate, not solver EV.</span>
-          <select id="analyzeBackend" title="Postflop backend for .txt analysis">
+          <span class="honesty-note" data-i18n="honesty">EV loss is an engine estimate, not solver EV.</span>
+          <select id="analyzeBackend" data-i18n-title="backend.title" title="Postflop backend for .txt analysis">
             <option value="equity">Equity</option>
             <option value="solver">Solver</option>
           </select>
+          <div class="segmented lang-segmented" id="langToggle" role="group" data-i18n-aria="lang.title" data-i18n-title="lang.title" aria-label="Switch language" title="Switch language">
+            <button type="button" data-lang="zh">中</button>
+            <button type="button" data-lang="en">EN</button>
+          </div>
+          <button id="chipUnitToggle" type="button" data-i18n-title="chipUnit.title" title="Toggle chip display units">BB</button>
           <input
             id="solverPathInput"
             type="text"
+            data-i18n-ph="solverPath.placeholder"
             placeholder="solver adapter path"
+            data-i18n-title="solverPath.title"
             title="Solver adapter path (used when backend is Solver)"
             disabled
           />
-          <label class="file-button" title="Load a .txt hand history (analyzed on the server) or a .json report">
-            <input id="fileInput" type="file" accept=".txt,.json,application/json,text/plain" />
-            <span>Load txt / json</span>
+          <button id="loadDataButton" class="file-button" type="button" data-i18n-title="loadData.title" data-i18n="loadData.text" title="Choose .txt files from ./data">
+            Load ./data
+          </button>
+          <label class="file-button" data-i18n-title="loadFiles.title" title="Load one or more .txt hand histories or .json reports">
+            <input id="fileInput" type="file" accept=".txt,.json,application/json,text/plain" multiple />
+            <span data-i18n="loadFiles.text">Load txt / json</span>
           </label>
         </div>
       </header>
 
+      <section id="dataFilePicker" class="data-file-picker" hidden>
+        <div class="data-file-picker-head">
+          <div>
+            <h2>./data</h2>
+            <p id="dataFileStatus" data-i18n="picker.status">Select hand-history files to analyze.</p>
+          </div>
+          <div class="data-file-actions">
+            <label class="reanalyze-toggle" data-i18n-title="reanalyze.title" title="Ignore cached results and analyze again">
+              <input id="forceReanalyze" type="checkbox" />
+              <span data-i18n="reanalyze.text">Re-analyze</span>
+            </label>
+            <button id="selectAllDataFiles" type="button" data-i18n="selectAll">Select all</button>
+            <button id="analyzeDataSelection" type="button" data-i18n="analyzeSelected">Analyze selected</button>
+            <button id="cancelDataSelection" type="button" data-i18n="cancel">Cancel</button>
+          </div>
+        </div>
+        <div id="dataFileList" class="data-file-list"></div>
+      </section>
+
       <main class="workspace">
         <section class="dashboard" aria-label="Dashboard">
           <div class="metric">
-            <span>Hands</span>
+            <span data-i18n="metric.hands">Hands</span>
             <strong id="metricHands">0</strong>
           </div>
           <div class="metric">
-            <span>GTO Accuracy</span>
+            <span data-i18n="metric.accuracy">GTO Accuracy</span>
             <strong id="metricAccuracy">--</strong>
           </div>
           <div class="metric">
-            <span>EV Loss / 100</span>
+            <span data-i18n="metric.evloss">EV Loss / 100</span>
             <strong id="metricEvLoss">--</strong>
           </div>
           <div class="metric">
-            <span>Net Chips</span>
+            <span id="metricNetLabel">Net BB</span>
             <strong id="metricNet">--</strong>
           </div>
           <div class="metric">
-            <span>Mistakes</span>
+            <span data-i18n="metric.mistakes">Mistakes</span>
             <strong id="metricMistakes">0</strong>
           </div>
           <div class="metric engine-metric">
-            <span>Engine Mix</span>
+            <span data-i18n="metric.engineMix">Engine Mix</span>
             <strong id="metricEngines">--</strong>
             <div class="engine-actions">
-              <button id="solveAllButton" class="solve-all-button" type="button" title="Run solver for every postflop decision">
+              <button id="solveAllButton" class="solve-all-button" type="button" data-i18n-title="solveAll.title" title="Run solver for every postflop decision">
                 Run all solver
               </button>
               <span id="solveAllStatus" class="solve-all-status"></span>
@@ -73,44 +102,46 @@
         <section class="filters" aria-label="Filters">
           <div class="search-box">
             <span aria-hidden="true">⌕</span>
-            <input id="searchInput" type="search" placeholder="Hand, card, position" />
+            <input id="searchInput" type="search" data-i18n-ph="search.placeholder" placeholder="Hand, card, position" />
           </div>
-          <div class="segmented" id="tierFilter" aria-label="Tier filter">
-            <button class="active" data-tier="all">All</button>
-            <button data-tier="mistake">Mistake</button>
-            <button data-tier="inaccuracy">Inaccuracy</button>
-            <button data-tier="good">Good</button>
+          <div class="segmented" id="tierFilter" data-i18n-aria="tier.filter" aria-label="Tier filter" role="group">
+            <button class="active" data-tier="all" data-i18n="tier.all">All</button>
+            <button data-tier="mistake" data-i18n="tier.mistake">Mistake</button>
+            <button data-tier="inaccuracy" data-i18n="tier.inaccuracy">Inaccuracy</button>
+            <button data-tier="good" data-i18n="tier.good">Good</button>
           </div>
-          <select id="positionFilter" aria-label="Position filter">
-            <option value="all">All positions</option>
+          <div class="segmented" id="streetFilter" data-i18n-aria="street.filter" aria-label="Street filter" role="group">
+            <button class="active" data-street="all" data-i18n="street.all">All</button>
+            <button data-street="preflop" data-i18n="street.preflop">Preflop</button>
+            <button data-street="flop" data-i18n="street.flop">Flop</button>
+            <button data-street="turn" data-i18n="street.turn">Turn</button>
+            <button data-street="river" data-i18n="street.river">River</button>
+          </div>
+          <select id="positionFilter" data-i18n-aria="position.filter" aria-label="Position filter">
+            <option value="all" data-i18n="position.all">All positions</option>
           </select>
-          <select id="streetFilter" aria-label="Street filter">
-            <option value="all">All streets</option>
-            <option value="preflop">Preflop</option>
-            <option value="flop">Flop</option>
-            <option value="turn">Turn</option>
-            <option value="river">River</option>
-          </select>
-          <select id="resultFilter" aria-label="Result filter">
-            <option value="all">All results</option>
-            <option value="win">Won chips</option>
-            <option value="loss">Lost chips</option>
+          <select id="resultFilter" data-i18n-aria="result.filter" aria-label="Result filter">
+            <option value="all" data-i18n="result.all">All results</option>
+            <option value="win" data-i18n="result.win">Won chips</option>
+            <option value="loss" data-i18n="result.loss">Lost chips</option>
           </select>
         </section>
 
-        <section class="content-grid">
+        <section id="contentGrid" class="content-grid">
           <aside class="hand-list-panel" aria-label="Hands">
             <div class="panel-heading">
-              <h2>Hands</h2>
+              <h2 data-i18n="panel.hands">Hands</h2>
               <span id="handCount">0</span>
             </div>
             <div id="handList" class="hand-list"></div>
           </aside>
 
+          <div id="leftResizeHandle" class="column-resizer" role="separator" aria-label="Resize hands column"></div>
+
           <section class="review-panel" aria-label="Hand review">
             <div id="emptyState" class="empty-state">
-              <strong>Load a JSON report</strong>
-              <span>Run poker-hand-review analyze with --json, then open it here.</span>
+              <strong data-i18n="empty.loadReport.title">Load a JSON report</strong>
+              <span data-i18n="empty.loadReport.sub">Run poker-hand-review analyze with --json, then open it here.</span>
             </div>
 
             <div id="reviewView" class="review-view hidden">
@@ -123,15 +154,15 @@
                   <div id="selectedMeta" class="muted"></div>
                 </div>
                 <div class="street-controls">
-                  <button id="prevStreet" title="Previous street">‹</button>
+                  <button id="prevStreet" data-i18n-title="street.prev" title="Previous street">‹</button>
                   <div id="streetTabs" class="street-tabs"></div>
-                  <button id="nextStreet" title="Next street">›</button>
-                  <button id="playReplay" title="Play replay">▶</button>
+                  <button id="nextStreet" data-i18n-title="street.next" title="Next street">›</button>
+                  <button id="playReplay" data-i18n-title="street.play" title="Play replay">▶</button>
                 </div>
               </div>
 
-              <div class="hero-hole-strip" aria-label="Hero hole cards">
-                <span>Hero</span>
+              <div class="hero-hole-strip" data-i18n-aria="hero.holeCards" aria-label="Hero hole cards">
+                <span data-i18n="hero">Hero</span>
                 <div id="heroHoleCards" class="card-row hero-hole-cards"></div>
               </div>
 
@@ -147,7 +178,7 @@
 
               <div class="timeline-section">
                 <div class="section-heading">
-                  <h3>Action Timeline</h3>
+                  <h3 data-i18n="section.timeline">Action Timeline</h3>
                   <span id="streetLabel"></span>
                 </div>
                 <div id="actionTimeline" class="action-timeline"></div>
@@ -155,7 +186,7 @@
 
               <div class="decision-section">
                 <div class="section-heading">
-                  <h3>Hero Decisions</h3>
+                  <h3 data-i18n="section.decisions">Hero Decisions</h3>
                   <span id="decisionCount"></span>
                 </div>
                 <div id="decisionList" class="decision-list"></div>
@@ -163,10 +194,12 @@
             </div>
           </section>
 
+          <div id="rightResizeHandle" class="column-resizer" role="separator" aria-label="Resize insights column"></div>
+
           <aside class="insights-panel" aria-label="Insights">
             <section>
               <div class="panel-heading">
-                <h2>Leaks</h2>
+                <h2 data-i18n="panel.leaks">Leaks</h2>
                 <span id="leakCount">0</span>
               </div>
               <div id="leakList" class="leak-list"></div>
@@ -174,14 +207,14 @@
 
             <section>
               <div class="panel-heading">
-                <h2>Positions</h2>
+                <h2 data-i18n="panel.positions">Positions</h2>
               </div>
               <div id="positionBars" class="bar-list"></div>
             </section>
 
             <section>
               <div class="panel-heading">
-                <h2>Opponents</h2>
+                <h2 data-i18n="panel.opponents">Opponents</h2>
               </div>
               <div id="opponentList" class="opponent-list"></div>
             </section>
