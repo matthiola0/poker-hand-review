@@ -192,7 +192,7 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
                                  └ 翻後：equity 估計（預設）或 CFR solver（選用）
 ```
 
-- **翻前**比對預存的 GTO 範圍表（各位置 open / 3bet / call，以及短籌碼 push/fold），是真正的 GTO、離線又快。
+- **翻前**比對預存的 **8-max MTT** GTO 範圍表（各位置 open / 3bet / call，以及短籌碼 push/fold）。範圍表帶完整四動作頻率（raise / all-in / call / fold），混合策略據此評分——任何在表中頻率 ≥5% 的動作都視為可接受。真正的 GTO、離線又快。
 - **翻後**計算對手假設範圍的 equity 並套用 EV 啟發法，可靠標出明顯失誤。想對在意的手以真 solver 取代啟發法，再接上外部 adapter。
 
 Solver adapter 是一支獨立行程，透過有文件記載的 JSON 契約溝通 —— 見 [`docs/SOLVER_ADAPTER.md`](../SOLVER_ADAPTER.md)。
@@ -254,7 +254,7 @@ poker-hand-review/
 ├── src/poker_hand_review/      核心引擎
 │   ├── parser/         手牌歷史文字解析
 │   ├── enrich/         Hero 視角衍生（位置、有效籌碼、決策節點）
-│   ├── gto/            翻前 GTO 範圍表
+│   ├── gto/            翻前 GTO 範圍表（8-max MTT，四動作）
 │   ├── evaluate/       逐決策評分 + 可插拔翻後後端
 │   ├── analysis/       equity / 統計 / 漏洞聚合
 │   ├── profile/        對手群像
@@ -262,7 +262,7 @@ poker-hand-review/
 ├── web/                靜態 Web UI（SPA）+ 本機 server endpoint
 ├── docs/               solver adapter 契約文件 + 翻譯
 ├── data/               範例手牌歷史
-├── tools/              TexasSolver adapter 與範圍表匯入腳本
+├── tools/              TexasSolver adapter；翻前範圍表匯入腳本
 └── tests/              測試
 ```
 

@@ -63,18 +63,26 @@ class DecisionEvaluator:
             return _unknown(hand, decision, "翻前圖表尚未涵蓋此情境")
 
         freq = chart.range.frequency(*hand.hero_hole)
-        best = _best_preflop_action(decision, freq)
+        profile = chart.range.action_profile(*hand.hero_hole)
+        if profile:
+            best = _profile_best_action(profile)
+            actions = _profile_actions(profile)
+            ev_loss = _preflop_ev_loss_profile(decision, profile, ctx.eff_stack_bb)
+        else:
+            best = _best_preflop_action(decision, freq)
+            actions = _preflop_actions(best, freq)
+            ev_loss = _preflop_ev_loss(decision, best, freq, ctx.eff_stack_bb)
         suggestion = GtoSuggestion(
-            actions=_preflop_actions(best, freq),
+            actions=actions,
             best_action=best,
             source="preflop_chart",
             detail={
                 **chart.detail,
                 "effective_stack_bb": round(ctx.eff_stack_bb, 1),
                 "hand_frequency": freq,
+                "action_profile": profile,
             },
         )
-        ev_loss = _preflop_ev_loss(decision, best, freq, ctx.eff_stack_bb)
         tier = tier_from_ev_loss(ev_loss, self.thresholds)
         return DecisionEval(
             hand_id=hand.hand_id,
@@ -170,6 +178,71 @@ def _preflop_ev_loss(decision: Decision, best: str, freq: float, eff_stack_bb: f
         return 2.2 if decision.facing in {"raise", "3bet"} else 1.0
     if freq > 0 and hero in {"fold", "check"}:
         return min(2.5, max(0.7, eff_stack_bb / 40))
+    return 0.8
+
+
+# ---- 四動作（raise/allin/call/fold）chart 評分 ----
+
+# 任何頻率 >= 此值的動作，視為 GTO 混合策略的一部分（可接受、不扣分）。
+_MIX_TOLERANCE = 0.05
+
+
+def _hero_chart_action(decision: Decision) -> str:
+    """Hero 實際動作 -> chart 動作名稱（raise/allin/call/fold/check）。"""
+    t = decision.hero_action.type
+    if t == ActionType.FOLD:
+        return "fold"
+    if t == ActionType.CHECK:
+        return "check"
+    if t == ActionType.CALL:
+        return "call"
+    if t in {ActionType.BET, ActionType.RAISE}:
+        return "allin" if decision.hero_action.all_in else "raise"
+    return "fold"
+
+
+def _aggro(profile: dict[str, float]) -> float:
+    return profile.get("raise", 0.0) + profile.get("allin", 0.0)
+
+
+def _profile_best_action(profile: dict[str, float]) -> str:
+    """最高頻動作；同頻時偏好較積極者。"""
+    order = {"allin": 3, "raise": 2, "call": 1, "fold": 0}
+    return max(profile, key=lambda a: (profile[a], order.get(a, 0)))
+
+
+def _profile_actions(profile: dict[str, float]) -> tuple[tuple[str, float], ...]:
+    items = [(a, round(f, 2)) for a, f in profile.items() if f > 0]
+    items.sort(key=lambda kv: kv[1], reverse=True)
+    return tuple(items)
+
+
+def _hero_profile_freq(decision: Decision, profile: dict[str, float]) -> float:
+    """Hero 動作在 chart 中的頻率（raise/allin 合併為積極；check 視同未投入）。"""
+    hero = _hero_chart_action(decision)
+    if hero in {"raise", "allin"}:
+        return _aggro(profile)
+    if hero == "check":
+        return profile.get("fold", 0.0)
+    return profile.get(hero, 0.0)
+
+
+def _preflop_ev_loss_profile(
+    decision: Decision, profile: dict[str, float], eff_stack_bb: float
+) -> float:
+    """以四動作頻率評分：Hero 動作落在 GTO 混合策略內即 0；偏離才扣分。"""
+    best_f = max(profile.values()) if profile else 0.0
+    if best_f <= 0:
+        return 0.0
+    hero_f = _hero_profile_freq(decision, profile)
+    if hero_f >= _MIX_TOLERANCE:
+        return 0.0
+    hero = _hero_chart_action(decision)
+    enter = _aggro(profile) + profile.get("call", 0.0)  # 非 fold 比例
+    if hero in {"fold", "check"} and enter >= 0.5:
+        return min(2.5, max(0.7, eff_stack_bb / 40))  # 該打卻棄
+    if hero in {"raise", "allin", "call"} and enter <= 0.1:
+        return 2.2 if decision.facing in {"raise", "3bet"} else 1.0  # 該棄卻投入
     return 0.8
 
 

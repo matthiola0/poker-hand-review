@@ -87,9 +87,23 @@ def _load_json_chart(key: ChartKey) -> ChartLookup | None:
     if not isinstance(freqs, dict):
         raise ValueError(f"chart {path.name} missing freqs object")
     meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    raw_actions = data.get("actions")
+    actions = (
+        {
+            str(hand): {str(a): float(f) for a, f in cell.items()}
+            for hand, cell in raw_actions.items()
+            if isinstance(cell, dict)
+        }
+        if isinstance(raw_actions, dict)
+        else None
+    )
+    source_type = str(meta.get("source_type", "solver_chart"))
     return ChartLookup(
-        range=Range({str(hand): float(freq) for hand, freq in freqs.items()}),
-        detail=_chart_detail(key, source_type="solver_chart", source_file=path.name, meta=meta),
+        range=Range(
+            freqs={str(hand): float(freq) for hand, freq in freqs.items()},
+            actions=actions,
+        ),
+        detail=_chart_detail(key, source_type=source_type, source_file=path.name, meta=meta),
     )
 
 

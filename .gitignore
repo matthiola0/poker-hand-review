@@ -26,3 +26,11 @@ docs/SDD.md
 
 # local personal settings (not version-controlled)
 .claude/settings.local.json
+
+# gto-preflop: local-only source material (not uploaded).
+# Only the generated charts JSON (under each set's charts/) is tracked.
+gto-preflop/**/*.png
+gto-preflop/**/*.md
+
+# Local-only chart-building helper (not part of the published package).
+tools/extract_preflop_charts.py
