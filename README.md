@@ -192,7 +192,7 @@ A quick visual tour of the Web UI. The hero image at the top shows the full inte
                                          └ postflop: equity estimate (default) or CFR solver (optional)
 ```
 
-- **Preflop** matches precomputed GTO range charts (per-position open / 3bet / call, plus short-stack push/fold) — true GTO, offline, and fast.
+- **Preflop** matches precomputed **8-max MTT** GTO range charts (per-position open / 3bet / call, plus short-stack push/fold). Charts carry full four-action frequencies (raise / all-in / call / fold), so a mixed strategy is graded as such — any action the chart plays with ≥5% frequency is accepted. True GTO, offline, and fast.
 - **Postflop** computes equity versus the opponent's assumed range and applies EV heuristics to reliably flag obvious mistakes. Attach an external adapter to replace those heuristics with a real solver on the hands you care about.
 
 The solver adapter is an external process that speaks a documented JSON contract — see [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
@@ -254,7 +254,7 @@ poker-hand-review/
 ├── src/poker_hand_review/      core engine
 │   ├── parser/         hand-history text parsing
 │   ├── enrich/         Hero-view derivation (position, effective stack, decision nodes)
-│   ├── gto/            preflop GTO range charts
+│   ├── gto/            preflop GTO range charts (8-max MTT, four-action)
 │   ├── evaluate/       per-decision grading + pluggable postflop backends
 │   ├── analysis/       equity / stats / leak aggregation
 │   ├── profile/        opponent profiling
@@ -262,7 +262,7 @@ poker-hand-review/
 ├── web/                static Web UI (SPA) + local server endpoints
 ├── docs/               solver adapter contract + translations
 ├── data/               example hand histories
-├── tools/              TexasSolver adapter and chart import scripts
+├── tools/              TexasSolver adapter; preflop chart extract/import scripts
 └── tests/              tests
 ```
 

@@ -11,11 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - GitHub Actions CI for pytest, Ruff, and mypy on Python 3.11 and 3.12.
 - Structured postflop equity diagnostics (estimated equity, required equity, assumed range, sample counts) with severity estimates explicitly labeled as non-solver.
+- 8-max MTT preflop range charts with full four-action frequencies (raise / all-in / call / fold), built from range screenshots via `tools/extract_preflop_charts.py` and wired into the engine via `tools/import_mtt_preflop_charts.py`.
 
 ### Changed
 
 - Completed package metadata for source distributions, wheels, and project links.
 - Expanded SUMMARY parsing to recognize showdown, muck, fold, and collected variants while keeping unknown lines visible in `raw_unparsed`.
+- Preflop grading now reads four-action chart frequencies: any action the chart plays with ≥5% frequency is accepted (no EV loss), while off-range actions are penalized. The MTT charts replace the bundled TexasSolver cash 60bb+ charts as the default preflop source; uncovered spots fall back to built-in approximate ranges.
 
 ## 0.1.0 - 2026-06-06
 

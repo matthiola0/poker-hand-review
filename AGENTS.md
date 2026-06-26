@@ -123,7 +123,7 @@ poker-hand-review web --report report.json --solver-path C:\path\solver-adapter.
 | `models/` | Pure data models: `hand`, `action`, `cards`, `enums`, `tournament`, `quality` |
 | `parser/` | `tokenizer` + `hand_parser` (+ `patterns`). Unknown lines go to `raw_unparsed` as a warning but **never abort** |
 | `enrich/` | `hero_context`: derives position, effective stack (BB), M, and Decision[] from a Hand |
-| `gto/` | Preflop GTO: `preflop_charts`, `ranges`; range-chart JSON in `gto/charts/` |
+| `gto/` | Preflop GTO: `preflop_charts`, `ranges`; 8-max MTT range-chart JSON in `gto/charts/` (four-action: raise/allin/call/fold + compatible `freqs`; default preflop source) |
 | `evaluate/` | `evaluator` per-decision grading; `postflop/` pluggable backends (`equity_backend` default, `solver_backend` optional); `quality` thresholds |
 | `analysis/` | `equity` (treys MC), `stats`, `leaks` |
 | `profile/` | `opponent` profiling and assumed range |
@@ -131,7 +131,7 @@ poker-hand-review web --report report.json --solver-path C:\path\solver-adapter.
 | `web_server.py` | Serves the `web/` SPA + `/api/solve` endpoint |
 | `config.py` | Global config: Hero, MC sample count, postflop backend, quality thresholds |
 
-`web/` is a static SPA that reads a JSON report. `tools/` holds the TexasSolver adapter and chart import scripts.
+`web/` is a static SPA that reads a JSON report. `tools/` holds the TexasSolver adapter plus preflop chart scripts (`extract_preflop_charts.py` builds JSON from range screenshots; `import_mtt_preflop_charts.py` wires them into `gto/charts/`).
 
 ## Project-specific notes
 
