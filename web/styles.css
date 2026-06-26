@@ -134,6 +134,24 @@ h3 {
   font-size: 12px;
 }
 
+.loading-spinner {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin-right: 8px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  vertical-align: -2px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .top-actions {
   display: flex;
   align-items: center;
@@ -180,6 +198,89 @@ h3 {
 
 .file-button input {
   display: none;
+}
+
+.data-file-picker {
+  margin: 12px 24px 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.data-file-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.data-file-picker p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.data-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reanalyze-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.data-file-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.data-file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+}
+
+.data-file-item input {
+  flex: 0 0 auto;
+}
+
+.data-file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-file-hands,
+.data-file-size {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-file-hands {
+  min-width: 58px;
+  color: var(--ink);
+  font-weight: 700;
+  text-align: right;
 }
 
 .workspace {
@@ -230,11 +331,15 @@ h3 {
 
 .filters {
   min-height: 46px;
-  display: grid;
-  grid-template-columns: minmax(220px, 1.2fr) auto 150px 140px 135px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   margin-bottom: 12px;
+}
+
+.filters .search-box {
+  flex: 1 1 220px;
 }
 
 .search-box {
@@ -283,6 +388,11 @@ h3 {
   color: #fff;
 }
 
+.lang-segmented button {
+  padding: 0 11px;
+  font-weight: 700;
+}
+
 select {
   height: 38px;
   padding: 0 9px;
@@ -291,9 +401,27 @@ select {
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(280px, 360px);
-  gap: 12px;
+  grid-template-columns:
+    minmax(240px, var(--left-column, 320px))
+    8px
+    minmax(420px, 1fr)
+    8px
+    minmax(260px, var(--right-column, 360px));
+  gap: 8px;
   align-items: start;
+}
+
+.column-resizer {
+  width: 8px;
+  min-height: calc(100vh - 160px);
+  border-radius: 999px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.column-resizer:hover,
+.content-grid.resizing .column-resizer {
+  background: var(--line);
 }
 
 .hand-list-panel,
@@ -345,6 +473,35 @@ select {
   max-height: calc(100vh - 210px);
   overflow: auto;
   padding-right: 2px;
+}
+
+.hand-source-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 34px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+}
+
+.hand-source-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hand-source-count {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .hand-row {
@@ -955,7 +1112,11 @@ select {
 
 @media (max-width: 1180px) {
   .content-grid {
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: minmax(260px, var(--left-column, 300px)) 8px minmax(0, 1fr);
+  }
+
+  #rightResizeHandle {
+    display: none;
   }
 
   .insights-panel {
@@ -989,8 +1150,18 @@ select {
 
   .file-button {
     justify-content: center;
-    width: 112px;
-    max-width: 112px;
+    width: 100%;
+    max-width: none;
+  }
+
+  .data-file-picker {
+    margin: 12px 12px 0;
+  }
+
+  .data-file-picker-head,
+  .data-file-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .engine-actions {
@@ -1005,10 +1176,13 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .filters,
   .content-grid,
   .insights-panel {
     grid-template-columns: 1fr;
+  }
+
+  .column-resizer {
+    display: none;
   }
 
   .segmented {

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+import hashlib
 import json
+import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -74,6 +76,12 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
         if parsed.path == "/report.json" and self.server_config.report_path:
             self._send_file(self.server_config.report_path)
             return
+        if parsed.path == "/api/data-files":
+            try:
+                self._send_json(list_data_files_payload(self.server_config))
+            except ValueError as exc:
+                self._send_json({"error": str(exc)}, status=400)
+            return
         self._send_static(parsed.path)
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib hook
@@ -82,6 +90,15 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
             try:
                 payload = self._read_json()
                 result = analyze_payload(payload, self.server_config)
+            except (ValueError, SolverBackendError) as exc:
+                self._send_json({"error": str(exc)}, status=400)
+                return
+            self._send_json(result)
+            return
+        if parsed.path == "/api/analyze-data":
+            try:
+                payload = self._read_json()
+                result = analyze_data_payload(payload, self.server_config)
             except (ValueError, SolverBackendError) as exc:
                 self._send_json({"error": str(exc)}, status=400)
                 return
@@ -150,17 +167,47 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
 
 
 def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dict[str, Any]:
-    """把上傳的 .txt 手牌歷史跑完整 pipeline，回傳與 report.json 相同結構。"""
-    text = payload.get("text")
-    if not isinstance(text, str) or not text.strip():
-        raise ValueError("missing hand-history text")
+    """逐檔分析上傳的 .txt 手牌歷史。
+
+    每個來源檔各自快取在 ``data/analyzed/`` 下；內容沒變就直接讀快取，
+    回傳 ``{"reports": [...]}`` 由前端 ``mergeReports`` 合併。
+    """
     hero = str(payload.get("hero") or config.DEFAULT.hero)
     postflop = str(payload.get("postflop") or "equity")
-    backend = _analyze_backend(postflop, payload.get("solver_path"), config_obj)
+    refresh = bool(payload.get("refresh"))
+    sources = _collect_sources(payload)
 
+    backend: PostflopBackend | None = None
+    reports: list[dict[str, Any]] = []
+    for filename, text in sources:
+        cache_path = _cache_path(config_obj, filename)
+        source_hash = _source_hash(hero, text)
+        if not refresh:
+            cached = _read_valid_cache(cache_path, source_hash)
+            if cached is not None:
+                reports.append(cached)
+                continue
+        if backend is None:
+            backend = _analyze_backend(postflop, payload.get("solver_path"), config_obj)
+        report = _analyze_one(filename, text, hero, backend)
+        if report is None:
+            continue
+        _write_cache(cache_path, report, source_hash)
+        report["from_cache"] = False
+        reports.append(report)
+
+    if not reports:
+        raise ValueError("找不到手牌（檔案需含 'Poker Hand #' 區塊）")
+    return {"reports": reports}
+
+
+def _analyze_one(
+    filename: str, text: str, hero: str, backend: PostflopBackend
+) -> dict[str, Any] | None:
+    """把單一檔案的手牌跑完整 pipeline，回傳與 report.json 相同結構。"""
     hands = parse_hands(split_hands(text), hero)
     if not hands:
-        raise ValueError("找不到手牌（檔案需含 'Poker Hand #' 區塊）")
+        return None
     contexts = [build_context(hand) for hand in hands]
     profiles = build_profiles(hands, hero)
     evaluator = DecisionEvaluator(
@@ -184,7 +231,128 @@ def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dic
         "leaks": aggregate_leaks(hand_evals),
     }
     result: dict[str, Any] = _jsonable(report)
+    for hand in result["hands"]:
+        hand["source_file"] = filename
     return result
+
+
+def _collect_sources(payload: dict[str, Any]) -> list[tuple[str, str]]:
+    """把 payload 整理成 (filename, text) 清單；跳過空白內容。"""
+    sources = payload.get("sources")
+    if sources is not None:
+        if not isinstance(sources, list):
+            raise ValueError("sources 必須是檔案陣列")
+        collected: list[tuple[str, str]] = []
+        for source in sources:
+            if not isinstance(source, dict):
+                raise ValueError("sources 必須是檔案陣列")
+            filename = str(source.get("filename") or "Uploaded text")
+            text = source.get("text")
+            if not isinstance(text, str) or not text.strip():
+                continue
+            collected.append((filename, text))
+        return collected
+
+    text = payload.get("text")
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("missing hand-history text")
+    filename = str(payload.get("filename") or "Uploaded text")
+    return [(filename, text)]
+
+
+CACHE_DIRNAME = "analyzed"
+
+
+def _cache_dir(config_obj: WebServerConfig) -> Path:
+    return config_obj.root / "data" / CACHE_DIRNAME
+
+
+def _cache_path(config_obj: WebServerConfig, filename: str) -> Path:
+    """把來源檔名對應到固定的快取檔路徑（同名來源 → 同一快取檔）。"""
+    stem = Path(str(filename)).name
+    safe = re.sub(r"[^A-Za-z0-9._-]", "_", stem) or "source"
+    return _cache_dir(config_obj) / f"{safe}.json"
+
+
+def _source_hash(hero: str, text: str) -> str:
+    digest = hashlib.sha256()
+    digest.update(hero.encode("utf-8"))
+    digest.update(b"\0")
+    digest.update(text.encode("utf-8"))
+    return digest.hexdigest()
+
+
+def _read_valid_cache(cache_path: Path, source_hash: str) -> dict[str, Any] | None:
+    """快取存在且內容雜湊相符時回傳報告，否則回傳 None。"""
+    if not cache_path.exists():
+        return None
+    try:
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    meta = data.get("_cache")
+    if not isinstance(meta, dict) or meta.get("source_hash") != source_hash:
+        return None
+    data.pop("_cache", None)
+    data["from_cache"] = True
+    return data
+
+
+def _write_cache(cache_path: Path, report: dict[str, Any], source_hash: str) -> None:
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {**report, "_cache": {"source_hash": source_hash, "schema": SCHEMA_VERSION}}
+    _write_report(cache_path, payload)
+
+
+def analyze_data_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dict[str, Any]:
+    """讀取專案 data 資料夾中的 .txt 手牌歷史，回傳 Web report。"""
+    files = _data_files(config_obj, payload.get("files"))
+    if not files:
+        raise ValueError("data 資料夾沒有 .txt 手牌檔")
+    request = dict(payload)
+    request["sources"] = [
+        {
+            "filename": path.name,
+            "text": path.read_text(encoding="utf-8-sig"),
+        }
+        for path in files
+    ]
+    return analyze_payload(request, config_obj)
+
+
+def list_data_files_payload(config_obj: WebServerConfig) -> dict[str, Any]:
+    """列出專案 data 資料夾中的 .txt 檔，供 Web UI 勾選。"""
+    files = _data_files(config_obj, None)
+    if not files:
+        raise ValueError("data 資料夾沒有 .txt 手牌檔")
+    return {
+        "files": [
+            {
+                "name": path.name,
+                "size": path.stat().st_size,
+                "hand_count": len(split_hands(path.read_text(encoding="utf-8-sig"))),
+            }
+            for path in files
+        ]
+    }
+
+
+def _data_files(config_obj: WebServerConfig, selected: Any) -> list[Path]:
+    data_dir = config_obj.root / "data"
+    available = {path.name: path for path in sorted(data_dir.glob("*.txt"))} if data_dir.is_dir() else {}
+    if selected is None:
+        return list(available.values())
+    if not isinstance(selected, list) or not all(isinstance(item, str) for item in selected):
+        raise ValueError("files 必須是檔名陣列")
+    files: list[Path] = []
+    for name in selected:
+        path = available.get(name)
+        if path is None:
+            raise ValueError(f"invalid data file: {name}")
+        files.append(path)
+    return files
 
 
 def _analyze_backend(
@@ -210,7 +378,8 @@ def solve_payload(payload: dict[str, Any], config: WebServerConfig) -> dict[str,
 
     hand_id = str(payload.get("hand_id", ""))
     decision_index = _decision_index(payload.get("decision_index"))
-    previous = _previous_decision_eval(config.report_path, hand_id, decision_index)
+    target_path = _solve_target_path(payload, config)
+    previous = _previous_decision_eval(target_path, hand_id, decision_index)
     node = _postflop_node(payload.get("node"))
     decision = _decision(payload.get("decision"), node)
     backend = SolverBackend(
@@ -232,9 +401,21 @@ def solve_payload(payload: dict[str, Any], config: WebServerConfig) -> dict[str,
     decision_eval = _jsonable(asdict(evaluation))
     decision_eval["solver_delta"] = _solver_delta(previous, decision_eval)
     result: dict[str, Any] = {"decision_eval": decision_eval, "saved": False}
-    if config.report_path is not None:
-        result.update(_persist_solver_result(config.report_path, hand_id, decision_index, decision_eval))
+    if target_path is not None:
+        result.update(_persist_solver_result(target_path, hand_id, decision_index, decision_eval))
     return result
+
+
+def _solve_target_path(payload: dict[str, Any], config: WebServerConfig) -> Path | None:
+    """solver 結果要覆寫的報告檔：優先寫回該手牌來源檔的快取，否則 --report 檔。"""
+    source_file = payload.get("source_file")
+    if isinstance(source_file, str) and source_file.strip():
+        candidate = _cache_path(config, source_file)
+        if candidate.exists():
+            return candidate
+    if config.report_path is not None and config.report_path.exists():
+        return config.report_path
+    return None
 
 
 def _decision_index(raw: Any) -> int:
