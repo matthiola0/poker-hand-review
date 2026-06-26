@@ -181,11 +181,14 @@ def test_preflop_chart_decision_carries_chart_detail():
     decision = hand_eval.decisions[0]
 
     assert decision.suggestion.source == "preflop_chart"
-    assert decision.suggestion.detail["chart_source_type"] == "built_in_approx"
+    assert decision.suggestion.detail["chart_source_type"] == "mtt_chart"
     assert decision.suggestion.detail["chart_id"] == "rfi_BTN_40bb"
     assert decision.suggestion.detail["stack_bucket"] == "40bb"
     assert decision.suggestion.detail["effective_stack_bb"] == 50.0
     assert decision.suggestion.detail["hand_frequency"] == pytest.approx(1.0)
+    # AKs 在 BTN 50bb RFI 為純加注，四動作 profile 反映此事
+    assert decision.suggestion.detail["action_profile"] == {"raise": 1.0}
+    assert decision.suggestion.best_action == "raise"
 
 
 def test_preflop_lookup_prefers_solver_chart_json(tmp_path, monkeypatch):
