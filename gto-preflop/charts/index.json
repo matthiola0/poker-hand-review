@@ -1,0 +1,1217 @@
+{
+  "count": 202,
+  "charts": [
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "100bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "100bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "100bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "100bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "100bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "100bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "100bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "100bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "100bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "100bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-IP3bet",
+      "path": "100bb/vs-open/EPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-blind3bet",
+      "path": "100bb/vs-open/EPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-IP3bet",
+      "path": "100bb/vs-open/MPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-blind3bet",
+      "path": "100bb/vs-open/MPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "BTNopen-vs-blind3bet",
+      "path": "100bb/vs-open/BTNopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "SBopen-vs-BB3bet",
+      "path": "100bb/vs-open/SBopen-vs-BB3bet.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "cold-BB",
+      "path": "100bb/vs-open/cold-BB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "cold-BTN",
+      "path": "100bb/vs-open/cold-BTN.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "100bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "100bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "100bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "100bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "100bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "100bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "100bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 100,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "100bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "70bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "70bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "70bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "70bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "70bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "70bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 70,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "70bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "50bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "50bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "50bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "50bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "50bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "50bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "50bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "50bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "50bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "50bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-IP3bet",
+      "path": "50bb/vs-open/EPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-blind3bet",
+      "path": "50bb/vs-open/EPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-IP3bet",
+      "path": "50bb/vs-open/MPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-blind3bet",
+      "path": "50bb/vs-open/MPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "BTNopen-vs-blind3bet",
+      "path": "50bb/vs-open/BTNopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "SBopen-vs-BB3bet",
+      "path": "50bb/vs-open/SBopen-vs-BB3bet.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "cold-BB",
+      "path": "50bb/vs-open/cold-BB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "cold-BTN",
+      "path": "50bb/vs-open/cold-BTN.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "50bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "50bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "50bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "50bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "50bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "50bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "50bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 50,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "50bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "40bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "40bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "40bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "40bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "40bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "40bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 40,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "40bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "35bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "35bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "35bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "35bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "35bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "35bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 35,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "35bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "30bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "30bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "30bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "30bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "30bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "30bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "30bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "30bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "30bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "30bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-IP3bet",
+      "path": "30bb/vs-open/EPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EPopen-vs-blind3bet",
+      "path": "30bb/vs-open/EPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-IP3bet",
+      "path": "30bb/vs-open/MPopen-vs-IP3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "MPopen-vs-blind3bet",
+      "path": "30bb/vs-open/MPopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "BTNopen-vs-blind3bet",
+      "path": "30bb/vs-open/BTNopen-vs-blind3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "SBopen-vs-BB3bet",
+      "path": "30bb/vs-open/SBopen-vs-BB3bet.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "cold-BB",
+      "path": "30bb/vs-open/cold-BB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "cold-BTN",
+      "path": "30bb/vs-open/cold-BTN.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "30bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "30bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "30bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "30bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "30bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "30bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "30bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 30,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "30bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "26bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "26bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "26bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "26bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "26bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "26bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 26,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "26bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "22bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "22bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "22bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "22bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "22bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "22bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 22,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "22bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "20bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "20bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "20bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "20bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "20bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "20bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "20bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "20bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "20bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "20bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "20bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "20bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "20bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "20bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "20bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "20bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "20bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 20,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "20bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "17bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "17bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "17bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "17bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "17bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "17bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 17,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "17bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "15bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "15bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "15bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "15bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "15bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "15bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "15bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "15bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "15bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "15bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "15bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "15bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "15bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "15bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "15bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "15bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "15bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 15,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "15bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "12bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "12bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "12bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "12bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "12bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "12bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 12,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "12bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "10bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "10bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "10bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "10bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "10bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "10bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "10bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "EP-vs-MP",
+      "path": "10bb/vs-open/EP-vs-MP.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "SB-vs-BB",
+      "path": "10bb/vs-open/SB-vs-BB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "BB-vs-SBlimp",
+      "path": "10bb/vs-open/BB-vs-SBlimp.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "EP-vs-BTN",
+      "path": "10bb/vs-open/EP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "EP-vs-SB",
+      "path": "10bb/vs-open/EP-vs-SB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "EP-vs-BB",
+      "path": "10bb/vs-open/EP-vs-BB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "MP-vs-BTN",
+      "path": "10bb/vs-open/MP-vs-BTN.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "MP-vs-SB",
+      "path": "10bb/vs-open/MP-vs-SB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "MP-vs-BB",
+      "path": "10bb/vs-open/MP-vs-BB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "BTN-vs-SB",
+      "path": "10bb/vs-open/BTN-vs-SB.json"
+    },
+    {
+      "stack_bb": 10,
+      "scenario": "vs-open",
+      "name": "BTN-vs-BB",
+      "path": "10bb/vs-open/BTN-vs-BB.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "8bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "8bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "8bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "8bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "8bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "8bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 8,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "8bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "5bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "5bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "5bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "5bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "5bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "5bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 5,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "5bb/rfi/SB.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "UTG",
+      "path": "3bb/rfi/UTG.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "UTG1",
+      "path": "3bb/rfi/UTG1.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "LJ",
+      "path": "3bb/rfi/LJ.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "HJ",
+      "path": "3bb/rfi/HJ.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "CO",
+      "path": "3bb/rfi/CO.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "BTN",
+      "path": "3bb/rfi/BTN.json"
+    },
+    {
+      "stack_bb": 3,
+      "scenario": "rfi",
+      "name": "SB",
+      "path": "3bb/rfi/SB.json"
+    }
+  ]
+}

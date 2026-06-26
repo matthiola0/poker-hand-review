@@ -26,3 +26,8 @@ docs/SDD.md
 
 # local personal settings (not version-controlled)
 .claude/settings.local.json
+
+# gto-preflop: personal range screenshots + notes (not uploaded).
+# Only the generated machine-readable data under gto-preflop/charts/ is kept.
+gto-preflop/**/*.png
+gto-preflop/**/*.md
