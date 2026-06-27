@@ -16,16 +16,39 @@
 
 > Review your poker hands like a chess engine — hand by hand, decision by decision, with every move graded against GTO.
 
-**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, grades each decision against GTO and colors it 🟢 fine / 🟡 inaccuracy / 🔴 mistake — with the recommended action and the reasoning behind it. After one session you know exactly which hands you misplayed, where, and how you should have played them.
+<p align="center">
+  <b>Free</b> · <b>Offline</b> · <b>Private — your hands never leave your machine</b> · built for <b>GGPoker / Natural8</b> tournaments
+</p>
+
+**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, grades each decision against GTO and colors it 🟢 fine / 🟡 inaccuracy / 🔴 mistake — with the recommended action and the reasoning behind it. Unlike cloud trainers, it runs entirely on **your machine** against **your real hands**, for free. After one session you know exactly which hands you misplayed, where, and how you should have played them.
 
 <p align="center">
-  <img src="docs/screenshots/hero.png" alt="poker-hand-review Web UI" width="720">
+  <img src="docs/screenshots/demo.gif" alt="poker-hand-review Web UI — hand replay demo" width="860">
 </p>
+
+## Try it in 30 seconds
+
+A synthetic sample ships with the repo — no poker account or data of your own needed:
+
+```powershell
+git clone https://github.com/matthiola0/poker-hand-review
+cd poker-hand-review
+python -m venv .venv; .venv\Scripts\activate
+pip install -e .
+poker-hand-review analyze data/sample.txt     # colored, hand-by-hand review in your terminal
+```
+
+Then open the same review in the browser:
+
+```powershell
+poker-hand-review web                          # visit the printed URL, click "Load txt / json"
+```
 
 ---
 
 ## Table of contents
 
+- [Try it in 30 seconds](#try-it-in-30-seconds)
 - [What it does](#what-it-does)
 - [Supported formats](#supported-formats)
 - [Quick start](#quick-start)
@@ -169,16 +192,16 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
 
 ## Screenshot tour
 
-A quick visual tour of the Web UI. The hero image at the top shows the full interface; click any shot to enlarge.
+A quick visual tour of the Web UI. The demo above shows the full interface in motion; click any shot to enlarge.
 
 <table>
 <tr>
-<td width="50%" align="center"><b>1. Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="210"></td>
-<td width="50%" align="center"><b>2. Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="360"></td>
+<td colspan="3" align="center"><b>Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>3. Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="270"></td>
-<td width="50%" align="center"><b>4. Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="300"></td>
+<td width="33%" align="center"><b>Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="200"></td>
+<td width="33%" align="center"><b>Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="230"></td>
+<td width="33%" align="center"><b>Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="250"></td>
 </tr>
 </table>
 

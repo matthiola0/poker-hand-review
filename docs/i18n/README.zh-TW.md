@@ -19,7 +19,7 @@
 **poker-hand-review** 讀取 Natural8 / GGPoker 錦標賽匯出的手牌歷史，從 **你本人（Hero）** 的視角，把每個決策對照 GTO 評分並上色 🟢 可接受 / 🟡 不準 / 🔴 失誤，並附上建議動作與背後理由。看完一場，你會清楚知道「我哪幾手打錯、錯在哪、該怎麼打」。
 
 <p align="center">
-  <img src="../screenshots/hero.png" alt="poker-hand-review Web UI" width="720">
+  <img src="../screenshots/demo.gif" alt="poker-hand-review Web UI — 逐手回放示範" width="860">
 </p>
 
 ---
@@ -169,16 +169,16 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
 
 ## 畫面導覽
 
-快速看懂 Web UI。最上方主圖是完整介面總覽；點任一張可放大。
+快速看懂 Web UI。最上方的動畫示範完整介面操作；點任一張可放大。
 
 <table>
 <tr>
-<td width="50%" align="center"><b>1. 手牌列表 Hand list</b><br><sub>逐手 ID／底牌／位置／淨利，依最嚴重失誤上色</sub><br><img src="../screenshots/hand-list.png" alt="Hand list" width="210"></td>
-<td width="50%" align="center"><b>2. 逐手回放 Hand replay</b><br><sub>牌桌＋動作時間軸＋決策評分卡（GTO／solver 建議）</sub><br><img src="../screenshots/hand-replay.png" alt="Hand replay" width="360"></td>
+<td colspan="3" align="center"><b>逐手回放 Hand replay</b><br><sub>牌桌＋動作時間軸＋決策評分卡（GTO／solver 建議）</sub><br><img src="../screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
 </tr>
 <tr>
-<td width="50%" align="center"><b>3. 漏洞 Leaks</b><br><sub>重複失誤模式：次數、累計 EV 損失、對應手牌</sub><br><img src="../screenshots/leaks.png" alt="Leaks" width="270"></td>
-<td width="50%" align="center"><b>4. 各位置盈虧 Positions</b><br><sub>各位置淨輸贏，看哪個位置在漏錢</sub><br><img src="../screenshots/positions.png" alt="Net by position" width="300"></td>
+<td width="33%" align="center"><b>手牌列表 Hand list</b><br><sub>逐手 ID／底牌／位置／淨利，依最嚴重失誤上色</sub><br><img src="../screenshots/hand-list.png" alt="Hand list" width="200"></td>
+<td width="33%" align="center"><b>漏洞 Leaks</b><br><sub>重複失誤模式：次數、累計 EV 損失、對應手牌</sub><br><img src="../screenshots/leaks.png" alt="Leaks" width="230"></td>
+<td width="33%" align="center"><b>各位置盈虧 Net by position</b><br><sub>各位置淨輸贏，看哪個位置在漏錢</sub><br><img src="../screenshots/positions.png" alt="Net by position" width="250"></td>
 </tr>
 </table>
 
