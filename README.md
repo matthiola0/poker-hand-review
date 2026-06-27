@@ -196,12 +196,20 @@ A quick visual tour of the Web UI. The demo above shows the full interface in mo
 
 <table>
 <tr>
-<td colspan="3" align="center"><b>Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub><br><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
+<td colspan="3" align="center"><b>Hand replay</b><br><sub>Table + action timeline + decision card (GTO / solver advice)</sub></td>
 </tr>
-<tr>
-<td width="33%" align="center"><b>Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub><br><img src="docs/screenshots/hand-list.png" alt="Hand list" width="200"></td>
-<td width="33%" align="center"><b>Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub><br><img src="docs/screenshots/leaks.png" alt="Leaks" width="230"></td>
-<td width="33%" align="center"><b>Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub><br><img src="docs/screenshots/positions.png" alt="Net by position" width="250"></td>
+<tr valign="top">
+<td colspan="3" align="center"><img src="docs/screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
+</tr>
+<tr valign="top">
+<td width="33%" align="center"><b>Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub></td>
+<td width="33%" align="center"><b>Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub></td>
+<td width="33%" align="center"><b>Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub></td>
+</tr>
+<tr valign="top">
+<td align="center"><img src="docs/screenshots/hand-list.png" alt="Hand list" width="200"></td>
+<td align="center"><img src="docs/screenshots/leaks.png" alt="Leaks" width="230"></td>
+<td align="center"><img src="docs/screenshots/positions.png" alt="Net by position" width="250"></td>
 </tr>
 </table>
 
