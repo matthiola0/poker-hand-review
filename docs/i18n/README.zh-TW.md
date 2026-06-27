@@ -173,12 +173,20 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
 
 <table>
 <tr>
-<td colspan="3" align="center"><b>逐手回放 Hand replay</b><br><sub>牌桌＋動作時間軸＋決策評分卡（GTO／solver 建議）</sub><br><img src="../screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
+<td colspan="3" align="center"><b>逐手回放 Hand replay</b><br><sub>牌桌＋動作時間軸＋決策評分卡（GTO／solver 建議）</sub></td>
 </tr>
-<tr>
-<td width="33%" align="center"><b>手牌列表 Hand list</b><br><sub>逐手 ID／底牌／位置／淨利，依最嚴重失誤上色</sub><br><img src="../screenshots/hand-list.png" alt="Hand list" width="200"></td>
-<td width="33%" align="center"><b>漏洞 Leaks</b><br><sub>重複失誤模式：次數、累計 EV 損失、對應手牌</sub><br><img src="../screenshots/leaks.png" alt="Leaks" width="230"></td>
-<td width="33%" align="center"><b>各位置盈虧 Net by position</b><br><sub>各位置淨輸贏，看哪個位置在漏錢</sub><br><img src="../screenshots/positions.png" alt="Net by position" width="250"></td>
+<tr valign="top">
+<td colspan="3" align="center"><img src="../screenshots/hand-replay.png" alt="Hand replay" width="680"></td>
+</tr>
+<tr valign="top">
+<td width="33%" align="center"><b>手牌列表 Hand list</b><br><sub>逐手 ID／底牌／位置／淨利，依最嚴重失誤上色</sub></td>
+<td width="33%" align="center"><b>漏洞 Leaks</b><br><sub>重複失誤模式：次數、累計 EV 損失、對應手牌</sub></td>
+<td width="33%" align="center"><b>各位置盈虧 Net by position</b><br><sub>各位置淨輸贏，看哪個位置在漏錢</sub></td>
+</tr>
+<tr valign="top">
+<td align="center"><img src="../screenshots/hand-list.png" alt="Hand list" width="200"></td>
+<td align="center"><img src="../screenshots/leaks.png" alt="Leaks" width="230"></td>
+<td align="center"><img src="../screenshots/positions.png" alt="Net by position" width="250"></td>
 </tr>
 </table>
 
