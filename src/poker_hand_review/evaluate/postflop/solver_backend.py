@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -110,8 +111,15 @@ def _parse_strategy(strategy: Any) -> tuple[tuple[tuple[str, float], ...], str]:
     if not actions:
         raise SolverBackendError("solver strategy 缺少 actions/strategy")
 
+    total = math.fsum(freq for _, freq in actions)
+    if total <= 0 or total > 1.5:
+        raise SolverBackendError(f"solver action frequencies 總和不合理（{total:.3f}，需 0<sum<=1.5）")
+
+    # best_action must be one of the returned actions; otherwise fall back to
+    # the highest-frequency action rather than trusting an out-of-set label.
+    names = {action for action, _ in actions}
     best_action = strategy.get("best_action")
-    if not isinstance(best_action, str) or not best_action:
+    if not isinstance(best_action, str) or best_action not in names:
         best_action = max(actions, key=lambda item: item[1])[0]
     return tuple(actions), best_action
 
@@ -143,6 +151,8 @@ def _action_pair(action: Any, freq: Any) -> tuple[str, float]:
         value = float(freq)
     except (TypeError, ValueError) as exc:
         raise SolverBackendError("solver action frequency 不合法") from exc
-    if value < 0:
-        raise SolverBackendError("solver action frequency 不可為負")
+    if not math.isfinite(value):
+        raise SolverBackendError("solver action frequency 必須是有限數（不可為 NaN/inf）")
+    if value < 0 or value > 1.0 + 1e-6:
+        raise SolverBackendError("solver action frequency 必須介於 0..1")
     return action, value

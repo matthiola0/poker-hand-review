@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from poker_hand_review.models import ActionType, Street
-from poker_hand_review.parser import parse_hand, split_hands
+from poker_hand_review.parser import parse_hand, parse_hands, split_hands
 
 SAMPLE = """Poker Hand #TM6030071921: Tournament #287580360, Bounty Hunters Special $10.80 Hold'em No Limit - Level6(150/300(45)) - 2026/06/02 18:50:00
 Table '105' 8-max Seat #8 is the button
@@ -142,3 +142,12 @@ def test_multiway_summary_supports_position_markers_and_multiword_players():
     assert [result.player for result in hand.showdowns] == ["first player", "second player", "Hero"]
     assert [result.won for result in hand.showdowns] == [22076, 0, 0]
     assert hand.raw_unparsed == ()
+
+
+def test_parse_hands_skips_malformed_block_without_aborting():
+    # A malformed block in the middle must not abort the whole batch; the good
+    # hands on either side are still parsed.
+    hands = parse_hands([SAMPLE, "this is not a poker hand block", SAMPLE])
+
+    assert len(hands) == 2
+    assert all(hand.hand_id == "TM6030071921" for hand in hands)
