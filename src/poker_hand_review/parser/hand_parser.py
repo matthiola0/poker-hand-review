@@ -131,7 +131,19 @@ def parse_hand(block: str, hero_name: str = "Hero") -> Hand:
 
 
 def parse_hands(blocks: list[str], hero_name: str = "Hero") -> list[Hand]:
-    return [parse_hand(b, hero_name) for b in blocks]
+    """Parse each block independently.
+
+    A block that fails to parse is skipped, not raised — one malformed hand
+    must never abort the rest of the file (batch tolerance, mirroring the
+    line-level tolerance inside ``parse_hand``).
+    """
+    hands: list[Hand] = []
+    for block in blocks:
+        try:
+            hands.append(parse_hand(block, hero_name))
+        except HandParseError:
+            continue
+    return hands
 
 
 # --- 內部輔助 -------------------------------------------------------------

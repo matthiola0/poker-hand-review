@@ -257,7 +257,10 @@ def _preflop_ev_loss_profile(
 
 def _postflop_ev_loss(decision: Decision, suggestion: GtoSuggestion, bb: int) -> float:
     hero = decision.hero_action.type.value
-    suggested = {action for action, freq in suggestion.actions if freq > 0.0}
+    # An action only counts as "fine" if it's part of the GTO mix with real
+    # frequency. A 1% solver action is not a free pass; let it fall through to
+    # the EV heuristics below (mirrors the preflop mix tolerance).
+    suggested = {action for action, freq in suggestion.actions if freq >= _MIX_TOLERANCE}
     if hero in suggested or hero == suggestion.best_action:
         return 0.0
     equity = _detail_float(suggestion, "estimated_equity")

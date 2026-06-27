@@ -5,8 +5,9 @@ import pytest
 from poker_hand_review.analysis.equity import EquityResult
 from poker_hand_review.enrich import Decision
 from poker_hand_review.evaluate.evaluator import _explain, _postflop_ev_loss
-from poker_hand_review.evaluate.postflop import EquityBackend, PostflopNode
-from poker_hand_review.models import Action, ActionType, Street, parse_cards
+from poker_hand_review.evaluate.postflop import EquityBackend, PostflopNode, SolverBackendError
+from poker_hand_review.evaluate.postflop.solver_backend import _parse_strategy
+from poker_hand_review.models import Action, ActionType, GtoSuggestion, Street, parse_cards
 
 
 def _node(*, to_call: int = 40, range_key: str | None = "balanced") -> PostflopNode:
@@ -172,3 +173,44 @@ def test_equity_explanation_labels_severity_as_non_solver_estimate(monkeypatch):
     assert key.startswith("explain.equity.deviate")
     assert params["eq"] == "10.0%"
     assert params["range"] == "tight"
+
+
+def _solver_suggestion(actions: tuple[tuple[str, float], ...], best: str) -> GtoSuggestion:
+    return GtoSuggestion(actions=actions, best_action=best, source="solver")
+
+
+def test_postflop_low_frequency_action_is_not_a_free_pass() -> None:
+    # Solver plays raise 97% / call 3%. Calling (a 3% action) is below the mix
+    # tolerance and is not the best action, so it must register EV loss.
+    suggestion = _solver_suggestion((("raise", 0.97), ("call", 0.03)), "raise")
+    assert _postflop_ev_loss(_decision(ActionType.CALL), suggestion, 20) > 0.0
+
+
+def test_postflop_real_mixed_action_is_accepted() -> None:
+    # Calling at 40% is a genuine part of the mix, so EV loss is zero.
+    suggestion = _solver_suggestion((("raise", 0.6), ("call", 0.4)), "raise")
+    assert _postflop_ev_loss(_decision(ActionType.CALL), suggestion, 20) == 0.0
+    # The best action is always free.
+    assert _postflop_ev_loss(_decision(ActionType.RAISE, amount=80), suggestion, 20) == 0.0
+
+
+def test_solver_strategy_rejects_non_finite_frequency() -> None:
+    with pytest.raises(SolverBackendError):
+        _parse_strategy({"actions": {"call": float("nan")}})
+    with pytest.raises(SolverBackendError):
+        _parse_strategy({"actions": {"call": float("inf")}})
+
+
+def test_solver_strategy_rejects_frequency_above_one() -> None:
+    with pytest.raises(SolverBackendError):
+        _parse_strategy({"actions": {"call": 1.5}})
+
+
+def test_solver_strategy_rejects_implausible_total() -> None:
+    with pytest.raises(SolverBackendError):
+        _parse_strategy({"actions": {"call": 0.9, "raise": 0.9}})  # total 1.8 > 1.5
+
+
+def test_solver_strategy_ignores_out_of_set_best_action() -> None:
+    actions, best = _parse_strategy({"actions": {"call": 0.7, "fold": 0.3}, "best_action": "jam"})
+    assert best == "call"  # falls back to the highest-frequency action, not "jam"
