@@ -1,18 +1,96 @@
+import io
 from pathlib import Path
 
 import pytest
 
 from poker_hand_review.web_server import (
+    _MAX_BODY_BYTES,
+    N8ReviewHandler,
     WebServerConfig,
     _cache_path,
     _solve_target_path,
     analyze_data_payload,
+    analyze_payload,
     list_data_files_payload,
 )
 
 
 def _config(root: Path, report_path: Path | None = None) -> WebServerConfig:
     return WebServerConfig(root, report_path, None, 120)
+
+
+class _Headers:
+    """Case-insensitive header lookup, like http.server's email.message.Message."""
+
+    def __init__(self, data: dict[str, str]) -> None:
+        self._data = {k.lower(): v for k, v in data.items()}
+
+    def get(self, key: str, default: str | None = None) -> str | None:
+        return self._data.get(key.lower(), default)
+
+
+def _handler(
+    headers: dict[str, str], body: bytes = b"", config: WebServerConfig | None = None
+) -> N8ReviewHandler:
+    handler = N8ReviewHandler.__new__(N8ReviewHandler)
+    handler.headers = _Headers(headers)  # type: ignore[assignment]
+    handler.rfile = io.BytesIO(body)  # type: ignore[assignment]
+    handler.server_config = config or WebServerConfig(Path("."), None, None, 120)
+    handler.sent: list[tuple[int, dict]] = []  # type: ignore[attr-defined]
+
+    def _send_json(payload: dict, status: int = 200) -> None:
+        handler.sent.append((status, payload))  # type: ignore[attr-defined]
+
+    handler._send_json = _send_json  # type: ignore[assignment,method-assign]
+    return handler
+
+
+def test_guard_rejects_cross_origin_post() -> None:
+    handler = _handler(
+        {"host": "127.0.0.1:8765", "origin": "http://evil.example", "content-type": "application/json"}
+    )
+    assert handler._guard_local_request() is False
+    assert handler.sent[-1][0] == 403  # type: ignore[attr-defined]
+
+
+def test_guard_rejects_non_json_content_type() -> None:
+    handler = _handler({"host": "127.0.0.1:8765", "content-type": "text/plain"})
+    assert handler._guard_local_request() is False
+    assert handler.sent[-1][0] == 415  # type: ignore[attr-defined]
+
+
+def test_guard_rejects_foreign_host() -> None:
+    handler = _handler({"host": "attacker.example", "content-type": "application/json"})
+    assert handler._guard_local_request() is False
+    assert handler.sent[-1][0] == 403  # type: ignore[attr-defined]
+
+
+def test_guard_allows_loopback_json_request() -> None:
+    handler = _handler({"host": "localhost:8765", "content-type": "application/json"})
+    assert handler._guard_local_request() is True
+
+
+def test_read_json_rejects_oversized_body() -> None:
+    handler = _handler({"content-length": str(_MAX_BODY_BYTES + 1)})
+    with pytest.raises(ValueError, match="too large"):
+        handler._read_json()
+
+
+def test_analyze_ignores_request_supplied_solver_path(tmp_path: Path) -> None:
+    # A request asks for the solver backend and supplies its own path, but the
+    # server was not started with --solver-path. The request path must be
+    # ignored (not executed), so this errors instead of running anything.
+    sample = Path("data/sample.txt").read_text(encoding="utf-8")
+    config = _config(tmp_path)  # solver_path is None
+    with pytest.raises(ValueError, match="--solver-path"):
+        analyze_payload(
+            {
+                "postflop": "solver",
+                "solver_path": str(tmp_path / "evil.exe"),
+                "sources": [{"filename": "hand.txt", "text": sample}],
+            },
+            config,
+        )
 
 
 def test_analyze_data_payload_returns_one_report_per_file(tmp_path: Path) -> None:

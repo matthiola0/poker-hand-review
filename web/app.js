@@ -30,8 +30,6 @@ const I18N = {
     "chipUnit.title": "Toggle chip display units",
     "chipUnit.showingBb": "Currently showing big blinds; click for chips",
     "chipUnit.showingChips": "Currently showing chips; click for BB",
-    "solverPath.placeholder": "solver adapter path",
-    "solverPath.title": "Solver adapter path (used when backend is Solver)",
     "loadData.title": "Choose .txt files from ./data",
     "loadData.text": "Load ./data",
     "loadFiles.title": "Load one or more .txt hand histories or .json reports",
@@ -178,8 +176,6 @@ const I18N = {
     "chipUnit.title": "切換籌碼顯示單位",
     "chipUnit.showingBb": "目前以大盲顯示；點擊切換為籌碼",
     "chipUnit.showingChips": "目前以籌碼顯示；點擊切換為大盲",
-    "solverPath.placeholder": "solver adapter 路徑",
-    "solverPath.title": "Solver adapter 路徑（後端為 Solver 時使用）",
     "loadData.title": "從 ./data 選擇 .txt 檔",
     "loadData.text": "載入 ./data",
     "loadFiles.title": "載入一個或多個 .txt 手牌歷史或 .json 報告",
@@ -401,7 +397,6 @@ function bindElements() {
     "cancelDataSelection",
     "forceReanalyze",
     "analyzeBackend",
-    "solverPathInput",
     "schemaLabel",
     "metricHands",
     "metricAccuracy",
@@ -453,10 +448,6 @@ function bindEvents() {
     if (!files.length) return;
     await loadFiles(files);
     event.target.value = "";
-  });
-
-  els.analyzeBackend.addEventListener("change", (event) => {
-    els.solverPathInput.disabled = event.target.value !== "solver";
   });
 
   els.searchInput.addEventListener("input", (event) => {
@@ -604,13 +595,12 @@ function loadAnalyzeResponse(data, sourceName) {
 
 async function analyzeText(text, sourceName) {
   const postflop = els.analyzeBackend.value || "equity";
-  const solverPath = els.solverPathInput.value.trim();
   setLoadingStatus(t("status.analyzing", { name: sourceName, backend: postflop }));
   try {
     const resp = await fetch("/api/analyze", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ text, filename: sourceName, postflop, solver_path: solverPath }),
+      body: JSON.stringify({ text, filename: sourceName, postflop }),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
@@ -675,7 +665,6 @@ async function analyzeSelectedDataFiles() {
 
 async function analyzeDataFolder(files) {
   const postflop = els.analyzeBackend.value || "equity";
-  const solverPath = els.solverPathInput.value.trim();
   setLoadingStatus(t("status.analyzingData", { n: formatNumber(files.length), backend: postflop }));
   els.loadDataButton.disabled = true;
   els.analyzeDataSelection.disabled = true;
@@ -683,7 +672,7 @@ async function analyzeDataFolder(files) {
     const resp = await fetch("/api/analyze-data", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ postflop, solver_path: solverPath, files, refresh: forceReanalyze() }),
+      body: JSON.stringify({ postflop, files, refresh: forceReanalyze() }),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
@@ -723,13 +712,12 @@ async function loadFiles(files) {
 
 async function analyzeSources(sources, sourceName) {
   const postflop = els.analyzeBackend.value || "equity";
-  const solverPath = els.solverPathInput.value.trim();
   setLoadingStatus(t("status.analyzing", { name: sourceName, backend: postflop }));
   try {
     const resp = await fetch("/api/analyze", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ sources, postflop, solver_path: solverPath, refresh: forceReanalyze() }),
+      body: JSON.stringify({ sources, postflop, refresh: forceReanalyze() }),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
