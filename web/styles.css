@@ -152,6 +152,40 @@ h3 {
   }
 }
 
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 30, 33, 0.45);
+}
+
+.loading-overlay-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 80vw;
+  padding: 20px 26px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.loading-spinner-lg {
+  width: 22px;
+  height: 22px;
+  margin-right: 0;
+  border-width: 3px;
+  vertical-align: middle;
+}
+
 .top-actions {
   display: flex;
   align-items: center;
@@ -477,7 +511,7 @@ select {
 
 .hand-source-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
   min-height: 34px;
@@ -488,13 +522,25 @@ select {
 }
 
 .hand-source-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
-  overflow: hidden;
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.hand-source-id {
   color: var(--ink);
   font-size: 12px;
   font-weight: 800;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.hand-source-rest {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .hand-source-count {
@@ -506,20 +552,40 @@ select {
 
 .hand-row {
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   min-height: 68px;
   padding: 10px;
   border: 1px solid var(--line);
+  border-left: 4px solid var(--unknown);
   background: #fff;
   border-radius: 8px;
   cursor: pointer;
+  text-align: left;
+}
+
+.hand-row.row-good {
+  border-left-color: var(--good);
+}
+
+.hand-row.row-inaccuracy {
+  border-left-color: var(--inaccuracy);
+}
+
+.hand-row.row-mistake {
+  border-left-color: var(--mistake);
+}
+
+.hand-row.row-unknown {
+  border-left-color: var(--unknown);
 }
 
 .hand-row:hover,
 .hand-row.active {
-  border-color: var(--accent);
+  border-top-color: var(--accent);
+  border-right-color: var(--accent);
+  border-bottom-color: var(--accent);
   background: #f8fbfb;
 }
 
@@ -1201,11 +1267,11 @@ select {
   }
 
   .hand-row {
-    grid-template-columns: 10px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .net-badge {
-    grid-column: 2;
+    grid-column: 1;
     justify-self: start;
     min-width: 0;
     text-align: left;

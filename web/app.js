@@ -139,6 +139,7 @@ const I18N = {
     "explain.src.preflop_chart": "chart",
     "explain.src.solver": "solver",
     "explain.src.equity_backend": "equity",
+    "leak.pattern": "{street}: {action} vs recommended {best}",
     "delta.noChange": "no change",
     "delta.changed": "changed",
     "delta.evLoss": "EV loss {ev}",
@@ -285,6 +286,7 @@ const I18N = {
     "explain.src.preflop_chart": "翻前圖表",
     "explain.src.solver": "Solver",
     "explain.src.equity_backend": "勝率",
+    "leak.pattern": "{street}：{action} vs 建議 {best}",
     "delta.noChange": "無變化",
     "delta.changed": "已變更",
     "delta.evLoss": "EV 損失 {ev}",
@@ -438,6 +440,8 @@ function bindElements() {
     "leakList",
     "positionBars",
     "opponentList",
+    "loadingOverlay",
+    "loadingOverlayText",
   ].forEach((id) => {
     els[id] = document.getElementById(id);
   });
@@ -759,10 +763,22 @@ async function loadReportFromQuery() {
 
 function setStatus(message) {
   els.schemaLabel.textContent = message;
+  hideLoadingOverlay();
 }
 
 function setLoadingStatus(message) {
   els.schemaLabel.innerHTML = `<span class="loading-spinner" aria-hidden="true"></span>${escapeHtml(message)}`;
+  showLoadingOverlay(message);
+}
+
+function showLoadingOverlay(message) {
+  if (!els.loadingOverlay) return;
+  els.loadingOverlayText.textContent = message;
+  els.loadingOverlay.classList.remove("hidden");
+}
+
+function hideLoadingOverlay() {
+  els.loadingOverlay?.classList.add("hidden");
 }
 
 function byId(items) {
@@ -974,8 +990,12 @@ function renderHandList() {
   groupHandsBySource(hands).forEach((group) => {
     const header = document.createElement("div");
     header.className = "hand-source-header";
+    const { id, rest } = splitSourceTitle(group.source);
     header.innerHTML = `
-      <span class="hand-source-name">${escapeHtml(group.source)}</span>
+      <div class="hand-source-name">
+        <span class="hand-source-id">${escapeHtml(id)}</span>
+        ${rest ? `<span class="hand-source-rest">${escapeHtml(rest)}</span>` : ""}
+      </div>
       <span class="hand-source-count">${escapeHtml(t("datafile.hands", { n: formatNumber(group.hands.length) }))}</span>
     `;
     els.handList.append(header);
@@ -988,7 +1008,9 @@ function renderHandRow(hand) {
     const ev = state.evalsById.get(hand.hand_id);
     const row = document.createElement("button");
     row.type = "button";
-    row.className = `hand-row ${hand.hand_id === state.selectedHandId ? "active" : ""}`;
+    row.className = `hand-row row-${ev?.hand_tier || "unknown"} ${
+      hand.hand_id === state.selectedHandId ? "active" : ""
+    }`;
     row.addEventListener("click", () => {
       state.selectedHandId = hand.hand_id;
       state.selectedStreet = firstStreet(hand);
@@ -996,10 +1018,6 @@ function renderHandRow(hand) {
       renderHandList();
       renderSelectedHand();
     });
-
-    const strip = document.createElement("span");
-    strip.className = `tier-strip tier-${ev?.hand_tier || "unknown"}`;
-    row.append(strip);
 
     const main = document.createElement("div");
     main.innerHTML = `
@@ -1018,6 +1036,13 @@ function renderHandRow(hand) {
     row.append(net);
 
     els.handList.append(row);
+}
+
+function splitSourceTitle(source) {
+  // 檔名格式為「編號 - 賽事名稱.txt」；以首個 " - " 切開，編號獨立一行。
+  const sep = source.indexOf(" - ");
+  if (sep === -1) return { id: source, rest: "" };
+  return { id: source.slice(0, sep), rest: source.slice(sep + 3) };
 }
 
 function groupHandsBySource(hands) {
@@ -1601,6 +1626,18 @@ function renderInsights() {
   renderOpponents();
 }
 
+function leakLabel(leak) {
+  // 後端附帶結構化欄位時依介面語言重組；否則退回字面 pattern（相容舊報告）。
+  if (leak.street && leak.best_action) {
+    return t("leak.pattern", {
+      street: labelStreet(leak.street),
+      action: leak.hero_action || "",
+      best: leak.best_action,
+    });
+  }
+  return leak.pattern || "";
+}
+
 function renderLeaks() {
   const leaks = state.report?.leaks || [];
   els.leakCount.textContent = formatNumber(leaks.length);
@@ -1614,7 +1651,7 @@ function renderLeaks() {
     node.type = "button";
     node.className = "leak-card";
     node.innerHTML = `
-      <div class="leak-title">${escapeHtml(leak.pattern)}</div>
+      <div class="leak-title">${escapeHtml(leakLabel(leak))}</div>
       <div class="leak-meta">${leak.count}x · ${Number(leak.total_ev_loss_bb || 0).toFixed(2)}bb</div>
       <div class="leak-meta">${(leak.example_hand_ids || []).map(escapeHtml).join(", ")}</div>
     `;
