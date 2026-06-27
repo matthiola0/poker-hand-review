@@ -88,19 +88,19 @@ def _labels(vpip: float, pfr: float, three_bet: float) -> tuple[tuple[str, ...],
     range_key = "balanced"
     if vpip >= 0.35 and pfr < 0.16:
         tags.append("loose-passive")
-        notes.append("可用較薄價值下注懲罰過度跟注")
+        notes.append("Punish over-calling with thinner value bets")
         range_key = "wide_passive"
     elif vpip >= 0.30 and pfr >= 0.20:
         tags.append("loose-aggressive")
-        notes.append("面對頻繁加注時擴大價值 3bet，降低邊緣 bluff")
+        notes.append("Widen value 3-bets and cut marginal bluffs against frequent raising")
         range_key = "wide_aggressive"
     elif vpip <= 0.15 and pfr <= 0.12:
         tags.append("tight")
-        notes.append("偷盲可略加頻率，但被反擊時收斂")
+        notes.append("Steal blinds a bit more, but back off when re-raised")
         range_key = "tight"
     else:
         tags.append("balanced")
-        notes.append("樣本尚未顯示明顯偏差")
+        notes.append("No clear tendency in the sample yet")
     if three_bet >= 0.08:
         tags.append("3bet-heavy")
     return tuple(tags), tuple(notes), range_key

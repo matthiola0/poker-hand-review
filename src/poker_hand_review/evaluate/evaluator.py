@@ -60,7 +60,9 @@ class DecisionEvaluator:
         )
         chart = lookup_with_detail(chart_key)
         if chart is None:
-            return _unknown(hand, decision, "翻前圖表尚未涵蓋此情境", "explain.chart_uncovered")
+            return _unknown(
+                hand, decision, "Preflop chart does not cover this spot yet", "explain.chart_uncovered"
+            )
 
         freq = chart.range.frequency(*hand.hero_hole)
         profile = chart.range.action_profile(*hand.hero_hole)
@@ -100,7 +102,7 @@ class DecisionEvaluator:
     def _eval_postflop(self, hand: Hand, ctx: HeroContext, decision: Decision) -> DecisionEval:
         street = next((s for s in hand.streets if s.street == decision.street), None)
         if street is None:
-            return _unknown(hand, decision, "找不到街段資料", "explain.no_street")
+            return _unknown(hand, decision, "Street data not found", "explain.no_street")
 
         node = PostflopNode(
             street=decision.street,
@@ -310,19 +312,19 @@ def _explain(
 ) -> tuple[str, str, dict[str, object]]:
     """回傳 (字面文字, i18n key, 參數)。字面維持原語言供 CLI；Web 依 key 翻譯。"""
     if suggestion.best_action == "unknown":
-        return ("資訊不足，暫不評分", "explain.no_score", {})
+        return ("Not enough info to grade", "explain.no_score", {})
     if ev_loss < 0.01:
         if suggestion.source == "equity_backend":
             return _explain_equity(suggestion, aligned=True, ev_loss=ev_loss)
         return (
-            f"符合目前 {suggestion.source} 建議",
+            f"Matches current {suggestion.source} recommendation",
             "explain.aligned",
             {"source": suggestion.source},
         )
     if suggestion.source == "equity_backend":
         return _explain_equity(suggestion, aligned=False, ev_loss=ev_loss)
     return (
-        f"建議 {suggestion.best_action}；目前動作偏離約 {ev_loss:.2f}bb",
+        f"Recommend {suggestion.best_action}; current action deviates by ~{ev_loss:.2f}bb",
         "explain.deviate",
         {"action": suggestion.best_action, "ev_loss": f"{ev_loss:.2f}"},
     )

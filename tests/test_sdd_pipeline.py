@@ -189,8 +189,8 @@ def test_preflop_chart_decision_carries_chart_detail():
     # AKs 在 BTN 50bb RFI 為純加注，四動作 profile 反映此事
     assert decision.suggestion.detail["action_profile"] == {"raise": 1.0}
     assert decision.suggestion.best_action == "raise"
-    # explanation 帶 i18n key + 參數，供 Web 端依介面語言翻譯（字面仍為中文供 CLI）
-    assert decision.explanation == "符合目前 preflop_chart 建議"
+    # explanation 帶 i18n key + 參數，供 Web 端依介面語言翻譯（字面統一英文供 CLI）
+    assert decision.explanation == "Matches current preflop_chart recommendation"
     assert decision.explanation_key == "explain.aligned"
     assert decision.explanation_params == {"source": "preflop_chart"}
 
