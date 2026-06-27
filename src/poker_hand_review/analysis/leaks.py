@@ -12,10 +12,13 @@ from ..models import DecisionEval, HandEval, QualityTier
 
 @dataclass(frozen=True)
 class Leak:
-    pattern: str           # 如 "BTN 對 3bet 過度跟注"
+    pattern: str           # 如 "BTN 對 3bet 過度跟注"（字面，CLI 用；Web 端依下列欄位重組）
     count: int
     total_ev_loss_bb: float
     example_hand_ids: tuple[str, ...]
+    street: str = ""           # 街段值（preflop/flop/...）供 Web i18n
+    hero_action: str = ""      # Hero 動作型別值
+    best_action: str = ""      # 建議動作
 
 
 def aggregate_leaks(hand_evals: list[HandEval]) -> list[Leak]:
@@ -26,7 +29,7 @@ def aggregate_leaks(hand_evals: list[HandEval]) -> list[Leak]:
             continue
         pattern = (
             f"{decision.street.value}: {decision.hero_action.type.value} "
-            f"vs 建議 {decision.suggestion.best_action}"
+            f"vs recommended {decision.suggestion.best_action}"
         )
         buckets.setdefault(pattern, []).append(decision)
 
@@ -36,6 +39,9 @@ def aggregate_leaks(hand_evals: list[HandEval]) -> list[Leak]:
             count=len(items),
             total_ev_loss_bb=sum(d.ev_loss_bb for d in items),
             example_hand_ids=tuple(dict.fromkeys(d.hand_id for d in items))[:3],
+            street=items[0].street.value,
+            hero_action=items[0].hero_action.type.value,
+            best_action=items[0].suggestion.best_action,
         )
         for pattern, items in buckets.items()
     ]

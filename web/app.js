@@ -121,6 +121,23 @@ const I18N = {
     "decision.pot": "pot {pot}",
     "decision.toCall": "to call {toCall}",
     "decision.noEval": "No evaluation",
+    "explain.no_score": "Not enough info to grade",
+    "explain.chart_uncovered": "Preflop chart does not cover this spot yet",
+    "explain.no_street": "Street data not found",
+    "explain.aligned": "Matches current {source} recommendation",
+    "explain.deviate": "Recommend {action}; current action deviates by ~{ev_loss}bb",
+    "explain.equity.aligned.req":
+      "Estimated equity {eq} vs {req} required against {range} range; action aligns. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.aligned.noreq":
+      "Estimated equity {eq} against {range} range; action aligns. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.deviate.req":
+      "Estimated equity {eq} vs {req} required against {range} range; recommend {action}. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.deviate.noreq":
+      "Estimated equity {eq} against {range} range; recommend {action}. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.src.preflop_chart": "chart",
+    "explain.src.solver": "solver",
+    "explain.src.equity_backend": "equity",
+    "leak.pattern": "{street}: {action} vs recommended {best}",
     "delta.noChange": "no change",
     "delta.changed": "changed",
     "delta.evLoss": "EV loss {ev}",
@@ -249,6 +266,23 @@ const I18N = {
     "decision.pot": "底池 {pot}",
     "decision.toCall": "待跟 {toCall}",
     "decision.noEval": "尚無評估",
+    "explain.no_score": "資訊不足，暫不評分",
+    "explain.chart_uncovered": "翻前圖表尚未涵蓋此情境",
+    "explain.no_street": "找不到街段資料",
+    "explain.aligned": "符合目前 {source} 建議",
+    "explain.deviate": "建議 {action}；目前動作偏離約 {ev_loss}bb",
+    "explain.equity.aligned.req":
+      "估計勝率 {eq}，需 {req}，對 {range} 範圍；動作一致。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.aligned.noreq":
+      "估計勝率 {eq}，對 {range} 範圍；動作一致。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.deviate.req":
+      "估計勝率 {eq}，需 {req}，對 {range} 範圍；建議 {action}。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.deviate.noreq":
+      "估計勝率 {eq}，對 {range} 範圍；建議 {action}。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.src.preflop_chart": "翻前圖表",
+    "explain.src.solver": "Solver",
+    "explain.src.equity_backend": "勝率",
+    "leak.pattern": "{street}：{action} vs 建議 {best}",
     "delta.noChange": "無變化",
     "delta.changed": "已變更",
     "delta.evLoss": "EV 損失 {ev}",
@@ -300,7 +334,7 @@ function initLang() {
   } catch {
     stored = null;
   }
-  setLang(stored === "en" || stored === "zh" ? stored : "zh");
+  setLang(stored === "en" || stored === "zh" ? stored : "en");
 }
 
 function setLang(lang) {
@@ -401,6 +435,8 @@ function bindElements() {
     "leakList",
     "positionBars",
     "opponentList",
+    "loadingOverlay",
+    "loadingOverlayText",
   ].forEach((id) => {
     els[id] = document.getElementById(id);
   });
@@ -715,10 +751,22 @@ async function loadReportFromQuery() {
 
 function setStatus(message) {
   els.schemaLabel.textContent = message;
+  hideLoadingOverlay();
 }
 
 function setLoadingStatus(message) {
   els.schemaLabel.innerHTML = `<span class="loading-spinner" aria-hidden="true"></span>${escapeHtml(message)}`;
+  showLoadingOverlay(message);
+}
+
+function showLoadingOverlay(message) {
+  if (!els.loadingOverlay) return;
+  els.loadingOverlayText.textContent = message;
+  els.loadingOverlay.classList.remove("hidden");
+}
+
+function hideLoadingOverlay() {
+  els.loadingOverlay?.classList.add("hidden");
 }
 
 function byId(items) {
@@ -930,8 +978,12 @@ function renderHandList() {
   groupHandsBySource(hands).forEach((group) => {
     const header = document.createElement("div");
     header.className = "hand-source-header";
+    const { id, rest } = splitSourceTitle(group.source);
     header.innerHTML = `
-      <span class="hand-source-name">${escapeHtml(group.source)}</span>
+      <div class="hand-source-name">
+        <span class="hand-source-id">${escapeHtml(id)}</span>
+        ${rest ? `<span class="hand-source-rest">${escapeHtml(rest)}</span>` : ""}
+      </div>
       <span class="hand-source-count">${escapeHtml(t("datafile.hands", { n: formatNumber(group.hands.length) }))}</span>
     `;
     els.handList.append(header);
@@ -944,7 +996,9 @@ function renderHandRow(hand) {
     const ev = state.evalsById.get(hand.hand_id);
     const row = document.createElement("button");
     row.type = "button";
-    row.className = `hand-row ${hand.hand_id === state.selectedHandId ? "active" : ""}`;
+    row.className = `hand-row row-${ev?.hand_tier || "unknown"} ${
+      hand.hand_id === state.selectedHandId ? "active" : ""
+    }`;
     row.addEventListener("click", () => {
       state.selectedHandId = hand.hand_id;
       state.selectedStreet = firstStreet(hand);
@@ -952,10 +1006,6 @@ function renderHandRow(hand) {
       renderHandList();
       renderSelectedHand();
     });
-
-    const strip = document.createElement("span");
-    strip.className = `tier-strip tier-${ev?.hand_tier || "unknown"}`;
-    row.append(strip);
 
     const main = document.createElement("div");
     main.innerHTML = `
@@ -974,6 +1024,13 @@ function renderHandRow(hand) {
     row.append(net);
 
     els.handList.append(row);
+}
+
+function splitSourceTitle(source) {
+  // 檔名格式為「編號 - 賽事名稱.txt」；以首個 " - " 切開，編號獨立一行。
+  const sep = source.indexOf(" - ");
+  if (sep === -1) return { id: source, rest: "" };
+  return { id: source.slice(0, sep), rest: source.slice(sep + 3) };
 }
 
 function groupHandsBySource(hands) {
@@ -1243,7 +1300,7 @@ function renderDecisions(hand) {
           · ${escapeHtml(t("decision.pot", { pot: formatChips(pair.ctx.pot_before, hand) }))}
           · ${escapeHtml(t("decision.toCall", { toCall: formatChips(pair.ctx.to_call || 0, hand) }))}
         </div>
-        <div>${escapeHtml(pair.ev?.explanation || t("decision.noEval"))}</div>
+        <div>${escapeHtml(explainText(pair.ev))}</div>
         <div class="suggestions">${suggestionPills(pair.ev)}</div>
       </div>
     `;
@@ -1449,6 +1506,19 @@ const SOURCE_META = {
   unknown: { label: "n/a", cls: "src-unknown", titleKey: "src.unknown.title" },
 };
 
+function explainText(ev) {
+  if (!ev) return t("decision.noEval");
+  const key = ev.explanation_key;
+  const hasKey = key && (I18N[state.lang]?.[key] != null || I18N.en[key] != null);
+  if (!hasKey) return ev.explanation || t("decision.noEval");
+  const params = { ...(ev.explanation_params || {}) };
+  if (params.source != null) {
+    const mapped = t(`explain.src.${params.source}`);
+    params.source = mapped === `explain.src.${params.source}` ? params.source : mapped;
+  }
+  return t(key, params);
+}
+
 function sourceBadge(ev) {
   const source = ev?.suggestion?.source || "unknown";
   const meta = SOURCE_META[source] || { label: source, cls: "src-unknown", titleKey: "src.unknown.title" };
@@ -1544,6 +1614,18 @@ function renderInsights() {
   renderOpponents();
 }
 
+function leakLabel(leak) {
+  // 後端附帶結構化欄位時依介面語言重組；否則退回字面 pattern（相容舊報告）。
+  if (leak.street && leak.best_action) {
+    return t("leak.pattern", {
+      street: labelStreet(leak.street),
+      action: leak.hero_action || "",
+      best: leak.best_action,
+    });
+  }
+  return leak.pattern || "";
+}
+
 function renderLeaks() {
   const leaks = state.report?.leaks || [];
   els.leakCount.textContent = formatNumber(leaks.length);
@@ -1557,7 +1639,7 @@ function renderLeaks() {
     node.type = "button";
     node.className = "leak-card";
     node.innerHTML = `
-      <div class="leak-title">${escapeHtml(leak.pattern)}</div>
+      <div class="leak-title">${escapeHtml(leakLabel(leak))}</div>
       <div class="leak-meta">${leak.count}x · ${Number(leak.total_ev_loss_bb || 0).toFixed(2)}bb</div>
       <div class="leak-meta">${(leak.example_hand_ids || []).map(escapeHtml).join(", ")}</div>
     `;

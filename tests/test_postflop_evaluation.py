@@ -163,8 +163,12 @@ def test_equity_explanation_labels_severity_as_non_solver_estimate(monkeypatch):
     )
     suggestion = EquityBackend(mc_samples=10).evaluate(_node(range_key="tight"))
 
-    explanation = _explain(_decision(ActionType.CALL, amount=40), suggestion, 1.3)
+    explanation, key, params = _explain(_decision(ActionType.CALL, amount=40), suggestion, 1.3)
 
     assert "estimated equity 10.0%" in explanation
     assert "tight range" in explanation
     assert "not exact solver EV" in explanation
+    # 結構化輸出：Web 端依 key + 參數翻譯（嚴重度仍標示為非 solver 估計）。
+    assert key.startswith("explain.equity.deviate")
+    assert params["eq"] == "10.0%"
+    assert params["range"] == "tight"

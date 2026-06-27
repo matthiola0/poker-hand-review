@@ -436,6 +436,7 @@ def solve_payload(payload: dict[str, Any], config: WebServerConfig) -> dict[str,
     suggestion = backend.evaluate(node)
     ev_loss = _postflop_ev_loss(decision, suggestion, node.bb)
     tier = tier_from_ev_loss(ev_loss, QualityThresholds())
+    text, key, params = _explain(decision, suggestion, ev_loss)
     evaluation = DecisionEval(
         hand_id=str(payload.get("hand_id", "")),
         street=node.street,
@@ -443,7 +444,9 @@ def solve_payload(payload: dict[str, Any], config: WebServerConfig) -> dict[str,
         suggestion=suggestion,
         ev_loss_bb=ev_loss,
         tier=tier,
-        explanation=_explain(decision, suggestion, ev_loss),
+        explanation=text,
+        explanation_key=key,
+        explanation_params=params,
     )
     decision_eval = _jsonable(asdict(evaluation))
     decision_eval["solver_delta"] = _solver_delta(previous, decision_eval)

@@ -60,7 +60,9 @@ class DecisionEvaluator:
         )
         chart = lookup_with_detail(chart_key)
         if chart is None:
-            return _unknown(hand, decision, "翻前圖表尚未涵蓋此情境")
+            return _unknown(
+                hand, decision, "Preflop chart does not cover this spot yet", "explain.chart_uncovered"
+            )
 
         freq = chart.range.frequency(*hand.hero_hole)
         profile = chart.range.action_profile(*hand.hero_hole)
@@ -84,6 +86,7 @@ class DecisionEvaluator:
             },
         )
         tier = tier_from_ev_loss(ev_loss, self.thresholds)
+        text, key, params = _explain(decision, suggestion, ev_loss)
         return DecisionEval(
             hand_id=hand.hand_id,
             street=decision.street,
@@ -91,13 +94,15 @@ class DecisionEvaluator:
             suggestion=suggestion,
             ev_loss_bb=ev_loss,
             tier=tier,
-            explanation=_explain(decision, suggestion, ev_loss),
+            explanation=text,
+            explanation_key=key,
+            explanation_params=params,
         )
 
     def _eval_postflop(self, hand: Hand, ctx: HeroContext, decision: Decision) -> DecisionEval:
         street = next((s for s in hand.streets if s.street == decision.street), None)
         if street is None:
-            return _unknown(hand, decision, "找不到街段資料")
+            return _unknown(hand, decision, "Street data not found", "explain.no_street")
 
         node = PostflopNode(
             street=decision.street,
@@ -116,6 +121,7 @@ class DecisionEvaluator:
         suggestion = self.postflop.evaluate(node)
         ev_loss = _postflop_ev_loss(decision, suggestion, hand.tournament.bb)
         tier = tier_from_ev_loss(ev_loss, self.thresholds)
+        text, key, params = _explain(decision, suggestion, ev_loss)
         return DecisionEval(
             hand_id=hand.hand_id,
             street=decision.street,
@@ -123,11 +129,13 @@ class DecisionEvaluator:
             suggestion=suggestion,
             ev_loss_bb=ev_loss,
             tier=tier,
-            explanation=_explain(decision, suggestion, ev_loss),
+            explanation=text,
+            explanation_key=key,
+            explanation_params=params,
         )
 
 
-def _unknown(hand: Hand, decision: Decision, reason: str) -> DecisionEval:
+def _unknown(hand: Hand, decision: Decision, reason: str, key: str = "") -> DecisionEval:
     return DecisionEval(
         hand_id=hand.hand_id,
         street=decision.street,
@@ -136,6 +144,7 @@ def _unknown(hand: Hand, decision: Decision, reason: str) -> DecisionEval:
         ev_loss_bb=0.0,
         tier=QualityTier.UNKNOWN,
         explanation=reason,
+        explanation_key=key,
     )
 
 
@@ -298,26 +307,54 @@ def _detail_float(suggestion: GtoSuggestion, key: str) -> float | None:
     return None
 
 
-def _explain(decision: Decision, suggestion: GtoSuggestion, ev_loss: float) -> str:
+def _explain(
+    decision: Decision, suggestion: GtoSuggestion, ev_loss: float
+) -> tuple[str, str, dict[str, object]]:
+    """回傳 (字面文字, i18n key, 參數)。字面維持原語言供 CLI；Web 依 key 翻譯。"""
     if suggestion.best_action == "unknown":
-        return "資訊不足，暫不評分"
+        return ("Not enough info to grade", "explain.no_score", {})
     if ev_loss < 0.01:
         if suggestion.source == "equity_backend":
             return _explain_equity(suggestion, aligned=True, ev_loss=ev_loss)
-        return f"符合目前 {suggestion.source} 建議"
+        return (
+            f"Matches current {suggestion.source} recommendation",
+            "explain.aligned",
+            {"source": suggestion.source},
+        )
     if suggestion.source == "equity_backend":
         return _explain_equity(suggestion, aligned=False, ev_loss=ev_loss)
-    return f"建議 {suggestion.best_action}；目前動作偏離約 {ev_loss:.2f}bb"
+    return (
+        f"Recommend {suggestion.best_action}; current action deviates by ~{ev_loss:.2f}bb",
+        "explain.deviate",
+        {"action": suggestion.best_action, "ev_loss": f"{ev_loss:.2f}"},
+    )
 
 
-def _explain_equity(suggestion: GtoSuggestion, *, aligned: bool, ev_loss: float) -> str:
+def _explain_equity(
+    suggestion: GtoSuggestion, *, aligned: bool, ev_loss: float
+) -> tuple[str, str, dict[str, object]]:
     equity = _detail_float(suggestion, "estimated_equity")
     required = _detail_float(suggestion, "required_equity")
     range_key = suggestion.detail.get("villain_range_key", "balanced")
     equity_text = f"estimated equity {equity:.1%}" if equity is not None else "estimated equity unavailable"
     required_text = f" vs {required:.1%} required" if required is not None else ""
     verdict = "action aligns" if aligned else f"recommend {suggestion.best_action}"
-    return (
+    literal = (
         f"{equity_text}{required_text} against {range_key} range; {verdict}. "
         f"Severity estimate {ev_loss:.2f}bb; not exact solver EV."
     )
+    if equity is None:
+        # 勝率不可得（罕見）：保留字面英文，Web 直接顯示。
+        return (literal, "", {})
+    params: dict[str, object] = {
+        "eq": f"{equity:.1%}",
+        "range": str(range_key),
+        "ev": f"{ev_loss:.2f}",
+    }
+    if required is not None:
+        params["req"] = f"{required:.1%}"
+    if not aligned:
+        params["action"] = suggestion.best_action
+    state = "aligned" if aligned else "deviate"
+    variant = "req" if required is not None else "noreq"
+    return (literal, f"explain.equity.{state}.{variant}", params)
