@@ -1652,7 +1652,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 preflop_chart 建議"
+          "explanation": "符合目前 preflop_chart 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "preflop_chart"
+          }
         },
         {
           "hand_id": "TM6030071921",
@@ -1684,7 +1688,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 solver 建議"
+          "explanation": "符合目前 solver 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "solver"
+          }
         },
         {
           "hand_id": "TM6030071921",
@@ -1712,7 +1720,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 solver 建議"
+          "explanation": "符合目前 solver 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "solver"
+          }
         }
       ],
       "hand_tier": "good",
@@ -1743,7 +1755,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 preflop_chart 建議"
+          "explanation": "符合目前 preflop_chart 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "preflop_chart"
+          }
         }
       ],
       "hand_tier": "good",
@@ -1774,7 +1790,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 preflop_chart 建議"
+          "explanation": "符合目前 preflop_chart 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "preflop_chart"
+          }
         }
       ],
       "hand_tier": "good",
@@ -1805,7 +1825,11 @@
           },
           "ev_loss_bb": 0.0,
           "tier": "good",
-          "explanation": "符合目前 preflop_chart 建議"
+          "explanation": "符合目前 preflop_chart 建議",
+          "explanation_key": "explain.aligned",
+          "explanation_params": {
+            "source": "preflop_chart"
+          }
         }
       ],
       "hand_tier": "good",

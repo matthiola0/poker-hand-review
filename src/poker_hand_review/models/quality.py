@@ -43,7 +43,9 @@ class DecisionEval:
     suggestion: GtoSuggestion
     ev_loss_bb: float          # GTO 最優 EV - Hero 動作 EV（BB 計，≥0）
     tier: QualityTier
-    explanation: str
+    explanation: str           # 字面文字（CLI 用；維持原語言）
+    explanation_key: str = ""  # i18n key；Web 端依介面語言翻譯，缺則退回 explanation
+    explanation_params: dict[str, object] = field(default_factory=dict)
 
     @property
     def color(self) -> str:

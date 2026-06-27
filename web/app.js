@@ -123,6 +123,22 @@ const I18N = {
     "decision.pot": "pot {pot}",
     "decision.toCall": "to call {toCall}",
     "decision.noEval": "No evaluation",
+    "explain.no_score": "Not enough info to grade",
+    "explain.chart_uncovered": "Preflop chart does not cover this spot yet",
+    "explain.no_street": "Street data not found",
+    "explain.aligned": "Matches current {source} recommendation",
+    "explain.deviate": "Recommend {action}; current action deviates by ~{ev_loss}bb",
+    "explain.equity.aligned.req":
+      "Estimated equity {eq} vs {req} required against {range} range; action aligns. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.aligned.noreq":
+      "Estimated equity {eq} against {range} range; action aligns. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.deviate.req":
+      "Estimated equity {eq} vs {req} required against {range} range; recommend {action}. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.equity.deviate.noreq":
+      "Estimated equity {eq} against {range} range; recommend {action}. Severity estimate {ev}bb; not exact solver EV.",
+    "explain.src.preflop_chart": "chart",
+    "explain.src.solver": "solver",
+    "explain.src.equity_backend": "equity",
     "delta.noChange": "no change",
     "delta.changed": "changed",
     "delta.evLoss": "EV loss {ev}",
@@ -253,6 +269,22 @@ const I18N = {
     "decision.pot": "底池 {pot}",
     "decision.toCall": "待跟 {toCall}",
     "decision.noEval": "尚無評估",
+    "explain.no_score": "資訊不足，暫不評分",
+    "explain.chart_uncovered": "翻前圖表尚未涵蓋此情境",
+    "explain.no_street": "找不到街段資料",
+    "explain.aligned": "符合目前 {source} 建議",
+    "explain.deviate": "建議 {action}；目前動作偏離約 {ev_loss}bb",
+    "explain.equity.aligned.req":
+      "估計勝率 {eq}，需 {req}，對 {range} 範圍；動作一致。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.aligned.noreq":
+      "估計勝率 {eq}，對 {range} 範圍；動作一致。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.deviate.req":
+      "估計勝率 {eq}，需 {req}，對 {range} 範圍；建議 {action}。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.equity.deviate.noreq":
+      "估計勝率 {eq}，對 {range} 範圍；建議 {action}。嚴重度估計 {ev}bb；非精確 solver EV。",
+    "explain.src.preflop_chart": "翻前圖表",
+    "explain.src.solver": "Solver",
+    "explain.src.equity_backend": "勝率",
     "delta.noChange": "無變化",
     "delta.changed": "已變更",
     "delta.evLoss": "EV 損失 {ev}",
@@ -304,7 +336,7 @@ function initLang() {
   } catch {
     stored = null;
   }
-  setLang(stored === "en" || stored === "zh" ? stored : "zh");
+  setLang(stored === "en" || stored === "zh" ? stored : "en");
 }
 
 function setLang(lang) {
@@ -1255,7 +1287,7 @@ function renderDecisions(hand) {
           · ${escapeHtml(t("decision.pot", { pot: formatChips(pair.ctx.pot_before, hand) }))}
           · ${escapeHtml(t("decision.toCall", { toCall: formatChips(pair.ctx.to_call || 0, hand) }))}
         </div>
-        <div>${escapeHtml(pair.ev?.explanation || t("decision.noEval"))}</div>
+        <div>${escapeHtml(explainText(pair.ev))}</div>
         <div class="suggestions">${suggestionPills(pair.ev)}</div>
       </div>
     `;
@@ -1460,6 +1492,19 @@ const SOURCE_META = {
   solver: { label: "solver", cls: "src-solver", titleKey: "src.solver.title" },
   unknown: { label: "n/a", cls: "src-unknown", titleKey: "src.unknown.title" },
 };
+
+function explainText(ev) {
+  if (!ev) return t("decision.noEval");
+  const key = ev.explanation_key;
+  const hasKey = key && (I18N[state.lang]?.[key] != null || I18N.en[key] != null);
+  if (!hasKey) return ev.explanation || t("decision.noEval");
+  const params = { ...(ev.explanation_params || {}) };
+  if (params.source != null) {
+    const mapped = t(`explain.src.${params.source}`);
+    params.source = mapped === `explain.src.${params.source}` ? params.source : mapped;
+  }
+  return t(key, params);
+}
 
 function sourceBadge(ev) {
   const source = ev?.suggestion?.source || "unknown";
