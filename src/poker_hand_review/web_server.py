@@ -29,6 +29,12 @@ from .profile.opponent import build_profiles
 from .report.json_export import SCHEMA_VERSION, _jsonable
 from .enrich import Decision, build_context
 
+# Cap request bodies so a single POST can't exhaust memory.
+_MAX_BODY_BYTES = 16 * 1024 * 1024  # 16 MiB
+# Loopback names always allowed for Host / Origin checks (the bound host is
+# added on top in WebServerConfig so a custom --host still works).
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1", ""})
+
 
 class WebServerConfig:
     def __init__(
@@ -37,12 +43,15 @@ class WebServerConfig:
         report_path: Path | None,
         solver_path: Path | None,
         solver_timeout_sec: int,
+        host: str = "127.0.0.1",
     ) -> None:
         self.root = root
         self.web_root = root / "web"
         self.report_path = report_path
         self.solver_path = solver_path
         self.solver_timeout_sec = solver_timeout_sec
+        self.host = host
+        self.allowed_hosts = frozenset(_LOOPBACK_HOSTS | {host})
 
 
 def serve_web(
@@ -55,7 +64,7 @@ def serve_web(
     solver_timeout_sec: int = 120,
 ) -> None:
     """Start the local Web UI server and block forever."""
-    config = WebServerConfig(root, report_path, solver_path, solver_timeout_sec)
+    config = WebServerConfig(root, report_path, solver_path, solver_timeout_sec, host)
 
     class Handler(N8ReviewHandler):
         server_config = config
@@ -85,6 +94,8 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
         self._send_static(parsed.path)
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib hook
+        if not self._guard_local_request():
+            return
         parsed = urlparse(self.path)
         if parsed.path == "/api/analyze":
             try:
@@ -119,8 +130,38 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args: object) -> None:
         return
 
+    def _guard_local_request(self) -> bool:
+        """Block cross-site / non-loopback POSTs (CSRF + DNS-rebinding defense).
+
+        The API can run a local solver binary, so a malicious web page must not
+        be able to drive it. We require a loopback Host, reject any cross-origin
+        Origin, and require a JSON content type (which also forces a CORS
+        preflight a hostile page can't satisfy).
+        """
+        allowed = self.server_config.allowed_hosts
+        host = (self.headers.get("host") or "").rsplit(":", 1)[0].strip("[]").lower()
+        if host not in allowed:
+            self._send_json({"error": "forbidden host"}, status=403)
+            return False
+        origin = self.headers.get("origin")
+        if origin is not None and origin != "null":
+            origin_host = (urlparse(origin).hostname or "").lower()
+            if origin_host not in allowed:
+                self._send_json({"error": "cross-origin request forbidden"}, status=403)
+                return False
+        ctype = (self.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+        if ctype != "application/json":
+            self._send_json({"error": "content-type must be application/json"}, status=415)
+            return False
+        return True
+
     def _read_json(self) -> dict[str, Any]:
-        length = int(self.headers.get("content-length", "0"))
+        try:
+            length = int(self.headers.get("content-length", "0"))
+        except ValueError as exc:
+            raise ValueError("invalid content-length") from exc
+        if length < 0 or length > _MAX_BODY_BYTES:
+            raise ValueError("request body too large")
         raw = self.rfile.read(length)
         data = json.loads(raw.decode("utf-8"))
         if not isinstance(data, dict):
@@ -131,7 +172,12 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
         rel = unquote(raw_path.lstrip("/"))
         target = (self.server_config.root / rel).resolve()
         web_root = self.server_config.web_root.resolve()
-        if not str(target).startswith(str(web_root)) or not target.exists() or target.is_dir():
+        try:
+            target.relative_to(web_root)
+        except ValueError:
+            self._send_json({"error": "not found"}, status=404)
+            return
+        if not target.exists() or target.is_dir():
             self._send_json({"error": "not found"}, status=404)
             return
         self._send_file(target)
@@ -188,7 +234,7 @@ def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dic
                 reports.append(cached)
                 continue
         if backend is None:
-            backend = _analyze_backend(postflop, payload.get("solver_path"), config_obj)
+            backend = _analyze_backend(postflop, config_obj)
         report = _analyze_one(filename, text, hero, backend)
         if report is None:
             continue
@@ -355,17 +401,18 @@ def _data_files(config_obj: WebServerConfig, selected: Any) -> list[Path]:
     return files
 
 
-def _analyze_backend(
-    postflop: str, raw_solver_path: Any, config_obj: WebServerConfig
-) -> PostflopBackend:
+def _analyze_backend(postflop: str, config_obj: WebServerConfig) -> PostflopBackend:
     if postflop == "equity":
         return get_backend("equity", mc_samples=config.DEFAULT.mc_samples)
     if postflop == "solver":
-        path = str(raw_solver_path).strip() if raw_solver_path else ""
-        if not path and config_obj.solver_path is not None:
-            path = str(config_obj.solver_path)
-        if not path:
-            raise ValueError("solver 後端需要 solver 路徑")
+        # The solver path is fixed at server startup (--solver-path); it is never
+        # taken from the request body, so a web page can't point it at an
+        # arbitrary executable.
+        if config_obj.solver_path is None:
+            raise ValueError(
+                "solver 後端需在啟動時以 --solver-path 設定（不接受請求指定路徑）"
+            )
+        path = str(config_obj.solver_path)
         if not Path(path).exists():
             raise ValueError(f"找不到 solver adapter: {path}")
         return get_backend("solver", solver_path=path)
