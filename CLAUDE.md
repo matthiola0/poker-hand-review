@@ -13,13 +13,13 @@ Part B is the specific context of the **poker-hand-review** project. Read both.
 
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+**Resolve material ambiguity. Surface relevant assumptions and tradeoffs.**
 
 Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them — don't pick silently.
+- Ask only when an unresolved ambiguity materially changes scope, correctness, or authorization.
+- Make reasonable, reversible implementation choices; state assumptions when they affect the result.
 - If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+- Continue independent work while waiting for any required answer.
 
 ## 2. Simplicity First
 
@@ -51,7 +51,10 @@ The test: every changed line should trace directly to the user's request.
 
 ## 4. Goal-Driven Execution
 
-**Define success criteria. Loop until verified.**
+**Define success criteria and verify the requested outcome.**
+
+Run affected tests and required checks first. Stop when the requested outcome is complete and those
+checks pass. Broaden or repeat verification only for new changes, failures, or unresolved risks.
 
 Transform tasks into verifiable goals:
 - "Add validation" → "Write tests for invalid inputs, then make them pass"
@@ -136,10 +139,10 @@ poker-hand-review web --report report.json --solver-path C:\path\solver-adapter.
 ## Project-specific notes
 
 - **The solver adapter is an external process that communicates via a JSON contract** — see [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md). Provide the path via `--solver-path` or the env vars `PHR_SOLVER_PATH` / `TEXAS_SOLVER_PATH`.
-- **`ev_loss_bb` is an engine estimate when no solver is used** — treat it as severity guidance, not exact solver EV. When changing grading logic, don't present the estimate as exact.
+- **`ev_loss_bb` is a heuristic severity estimate, including with a solver** — the current adapter returns strategy frequencies, not action EVs. Preserve the `ev_loss_kind` marker and never present the estimate as measured solver EV. Bump `web_server.ANALYSIS_VERSION` when pipeline or grading semantics change so cached reports expire.
 - **Don't break the parser's tolerance rule**: known tokens are parsed strictly; unknown lines go to `raw_unparsed`. When adding format support, keep this strategy — never let an unknown line abort parsing.
 - Comments may be **English or Chinese** (existing code is mostly Traditional Chinese); just match the surrounding style (see guideline 3).
-- When changing grading, parsing, or export logic, check against `tests/` (`test_hand_parser`, `test_equity`, `test_sdd_pipeline`, `test_texassolver_adapter`) and keep them green (see guideline 4).
+- When changing grading, parsing, or export logic, run affected tests from `tests/` (`test_hand_parser`, `test_equity`, `test_sdd_pipeline`, `test_texassolver_adapter`). Expand coverage when shared behavior is affected (see guideline 4).
 - `report.json` / `report.*.json` are generated outputs, not hand-written sources.
 
 <!-- AGENTS.md is auto-synced from this file by the PostToolUse hook in .claude/settings.json — edit CLAUDE.md only. -->
