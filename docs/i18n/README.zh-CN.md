@@ -14,9 +14,9 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license MIT">
 </p>
 
-> 像国际象棋引擎一样复盘你的扑克手牌 —— 逐手、逐决策，用 GTO 为你的每一步标注颜色。
+> 逐手、逐决策复盘扑克手牌，用图表与胜率估算找出值得优先研究的局面。
 
-**poker-hand-review** 读取 Natural8 / GGPoker 锦标赛导出的手牌历史，从 **你本人（Hero）** 的视角，把每个决策对照 GTO 评分并标注颜色 🟢 可接受 / 🟡 不准 / 🔴 失误，并附上建议动作与背后理由。看完一场，你会清楚知道「我哪几手打错、错在哪、该怎么打」。
+**poker-hand-review** 读取 Natural8 / GGPoker 锦标赛导出的手牌历史，从 **你本人（Hero）** 的视角，将决策与翻前图表、翻后估算比较，并标色 🟢 低偏差 / 🟡 值得复查 / 🔴 优先复查，附上建议动作与理由，帮助安排后续研究顺序。
 
 <p align="center">
   <img src="../screenshots/demo.gif" alt="poker-hand-review Web UI — 逐手回放演示" width="860">
@@ -47,8 +47,8 @@
 
 poker-hand-review 把一整个文件夹的原始手牌历史 `.txt` 转成可标注颜色、可浏览的复盘 —— 就像国际象棋引擎逐步标注一盘棋。
 
-- **逐决策 GTO 评分。** 每手抽出 Hero 的每个决策点，依偏离 GTO 的 EV 损失标注颜色，失误一眼可见。
-- **统计报表。** GTO 准确率、每百手 EV 损失、VPIP / PFR / 3Bet / C-bet，以及各位置净利。
+- **逐决策复盘。** 每手抽出 Hero 的决策点，依严重度估算标色，安排复盘优先顺序。
+- **统计报表。** 低偏差决策比例、每百手严重度估算、VPIP / PFR / 3Bet / C-bet，以及各位置净利。
 - **对手画像。** 聚合重复对手的倾向、产生剥削建议，并把假设范围回馈给翻后 equity 计算。
 - **交互式 Web UI。** 逐街回放任一手、按位置／街／结果筛选，并深入漏洞与对手画像。
 - **可插拔翻后引擎。** 默认用快速的 equity/EV 估计；关键手可接外部 CFR solver 做真正的深解。
@@ -95,7 +95,7 @@ poker-hand-review 可以完全在浏览器操作，也可以走命令行。两�
 | 适用场景 | 查看单一文件 | 批量分析整个文件夹 |
 | 每次输入 | 一个 `.txt` | 整个文件夹的 `.txt` |
 | 终端逐手复盘 | — | 有 |
-| 生成 `report.json` | 否 | 是（可日后重新加载） |
+| 保存结果 | `data/analyzed/` 逐文件缓存 | `report.json`（可日后重新加载） |
 
 **浏览器** —— 上传即分析，无需另跑 `analyze`：
 
@@ -103,7 +103,9 @@ poker-hand-review 可以完全在浏览器操作，也可以走命令行。两�
 poker-hand-review web
 ```
 
-打开打印的网址（默认 <http://127.0.0.1:8765/>），点 **Load txt / json** 并选一个 `.txt`。本地 server 会当场解析与评分并渲染复盘，过程不写任何文件。后端下拉菜单（**Equity** / **Solver**）与 solver 路径栏位用来控制翻后如何评分。
+打开打印的网址（默认 <http://127.0.0.1:8765/>），点 **Load txt / json** 并选一个 `.txt`。本地 server 会解析、评分并渲染复盘，将逐文件 JSON 缓存写到 `data/analyzed/`。后端下拉菜单（**Equity** / **Solver**）选择翻后分析方式；solver 路径须在启动 server 时以 `--solver-path` 设置。
+
+缓存只在原文、Hero、后端、分析版本、图表内容与分析设置相符时复用；相关 solver 设置或 adapter 文件变更也会使其失效。旧格式缓存会在下次分析时重建，`refresh` 可强制重算。报告的 `analysis` 记录初次分析设置，个别决策则标示已保存的 solver 复查结果。
 
 **命令行** —— 先把整个文件夹分析好，再开报表：
 
@@ -180,7 +182,7 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
 </tr>
 <tr valign="top">
 <td width="33%" align="center"><b>手牌列表 Hand list</b><br><sub>逐手 ID／底牌／位置／净利，依最严重失误标注颜色</sub></td>
-<td width="33%" align="center"><b>漏洞 Leaks</b><br><sub>重复失误模式：次数、累计 EV 损失、对应手牌</sub></td>
+<td width="33%" align="center"><b>漏洞 Leaks</b><br><sub>重复复查模式：次数、累计严重度估算、对应手牌</sub></td>
 <td width="33%" align="center"><b>各位置盈亏 Net by position</b><br><sub>各位置净输赢，看哪个位置在漏钱</sub></td>
 </tr>
 <tr valign="top">
@@ -200,13 +202,13 @@ poker-hand-review hand ".\data\xxx.txt" --id TM6030071921 --postflop solver --so
                                  └ 翻后：equity 估计（默认）或 CFR solver（选用）
 ```
 
-- **翻前**比对预存的 **8-max MTT** GTO 范围表（各位置 open / 3bet / call，以及短筹码 push/fold）。范围表带完整四动作频率（raise / all-in / call / fold），混合策略据此评分——任何在表中频率 ≥5% 的动作都视为可接受。真正的 GTO、离线又快。
-- **翻后**计算对手假设范围的 equity 并套用 EV 启发法，可靠标出明显失误。想对在意的手以真 solver 取代启发法，再接上外部 adapter。
+- **翻前**比对预存的 **8-max MTT** 四动作范围表（raise / all-in / call / fold），一般加注与全押分开评分。≥5% 的接受门槛是评分启发法，不是动作 EV 计算。筹码分桶与位置映射近似实际局面；除一般加注与全押的区别外，不评估下注尺寸。
+- **翻后**估算对手假设范围的 equity，据此安排复盘顺序。Equity 后端的动作权重是启发式建议，不是 GTO 混合频率。外部 adapter 可提供模型局面的 solver 策略；随附 TexasSolver adapter 假设 Hero 有位置，使用预设对手范围与简化尺寸，限制详见其文档。
 
 Solver adapter 是一支独立进程，通过有文档记载的 JSON 契约通信 —— 见 [`docs/SOLVER_ADAPTER.md`](../SOLVER_ADAPTER.md)。
 
 > [!WARNING]
-> 未使用 solver 时，`ev_loss_bb` 是引擎的**估计值**（来自图表 / equity 启发法）。请当作**严重度指引**，不是精确的 solver EV。要精确数字，请对该手以 `--postflop solver` 接上 solver adapter 重跑。
+> `ev_loss_bb` 为维持 JSON 兼容性而保留名称，代表**严重度估算**，使用 solver 时也相同。目前 adapter 契约只返回策略频率，未提供各动作 EV。已评分决策的 `ev_loss_kind` 为 `heuristic_severity`，未评分为 `unavailable`。零代表未被启发法扣分，不代表实测 EV 损失为零。`gto_accuracy` 是已评分决策中的绿灯比例；`ev_loss_per_100` 累加的是严重度估算。
 
 ---
 
@@ -231,7 +233,7 @@ poker-hand-review 内附 [TexasSolver](https://github.com/bupticybee/TexasSolver
    poker-hand-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
    ```
 
-若想改在 Web UI 内启用 solver，启动 server 时加上 `--solver-path`，或在加载 `.txt` 时选 **Solver** 并填入路径栏位。
+若想在 Web UI 内启用 solver，启动 server 时加上 `--solver-path`，再于加载 `.txt` 时选 **Solver**，或针对个别决策执行 solver 复查。
 
 </details>
 

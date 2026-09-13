@@ -1,8 +1,13 @@
 import io
+import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from poker_hand_review import config as app_config
+from poker_hand_review.models import GtoSuggestion
+from poker_hand_review import web_server
 from poker_hand_review.web_server import (
     _MAX_BODY_BYTES,
     N8ReviewHandler,
@@ -183,6 +188,82 @@ def test_solve_target_path_prefers_source_file_cache(tmp_path: Path) -> None:
     assert _solve_target_path({"source_file": "hand.txt"}, config) == cache_file
     # Without a source_file the --report path is still used.
     assert _solve_target_path({}, config) == report_path
+
+
+@pytest.mark.parametrize("change", ["adapter", "environment", "timeout"])
+def test_analysis_cache_separates_backends(tmp_path: Path, monkeypatch, change) -> None:
+    adapter = tmp_path / "adapter.exe"
+    adapter.write_bytes(b"test adapter, never executed")
+    config = WebServerConfig(tmp_path, None, adapter, 120)
+    sample = Path("data/sample.txt").read_text(encoding="utf-8")
+    payload = {"filename": "hand.txt", "text": sample, "postflop": "equity"}
+
+    class FakeBackend:
+        def __init__(self, source):
+            self.source = source
+
+        def evaluate(self, node):
+            return GtoSuggestion(actions=(("call", 1.0),), best_action="call", source=self.source)
+
+    monkeypatch.setattr(web_server, "get_backend", lambda name, **kwargs: FakeBackend(name))
+    analyze_payload(payload, config)
+    switched = analyze_payload({**payload, "postflop": "solver"}, config)["reports"][0]
+
+    assert switched["from_cache"] is False
+    assert any(
+        decision["suggestion"]["source"] == "solver"
+        for hand in switched["hand_evals"]
+        for decision in hand["decisions"]
+    )
+    assert analyze_payload({**payload, "postflop": "solver"}, config)["reports"][0]["from_cache"]
+
+    if change == "adapter":
+        adapter.write_bytes(b"updated adapter")
+    elif change == "environment":
+        monkeypatch.setenv("PHR_SOLVER_ACCURACY", "0.123")
+    else:
+        config.solver_timeout_sec = 60
+    assert not analyze_payload({**payload, "postflop": "solver"}, config)["reports"][0]["from_cache"]
+
+
+@pytest.mark.parametrize("change", ["samples", "charts", "version", "schema"])
+def test_analysis_cache_invalidates_changed_inputs(tmp_path: Path, monkeypatch, change) -> None:
+    # Cache behavior does not depend on Monte Carlo accuracy.
+    monkeypatch.setattr(app_config, "DEFAULT", replace(app_config.DEFAULT, mc_samples=1))
+    charts = tmp_path / "charts"
+    charts.mkdir()
+    chart = charts / "cache-test.json"
+    chart.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(web_server.preflop_charts, "CHART_DIR", charts)
+    sample = Path("data/sample.txt").read_text(encoding="utf-8")
+    config = _config(tmp_path)
+    payload = {"filename": "hand.txt", "text": sample, "postflop": "equity"}
+    analyze_payload(payload, config)
+    assert analyze_payload(payload, config)["reports"][0]["from_cache"] is True
+
+    if change == "samples":
+        monkeypatch.setattr(app_config, "DEFAULT", replace(app_config.DEFAULT, mc_samples=2))
+    elif change == "charts":
+        chart.write_text('{"version": 2}', encoding="utf-8")
+    elif change == "version":
+        monkeypatch.setattr(web_server, "ANALYSIS_VERSION", "changed")
+    else:
+        path = _cache_path(config, "hand.txt")
+        cache = json.loads(path.read_text(encoding="utf-8"))
+        cache["_cache"]["schema"] = "old"
+        path.write_text(json.dumps(cache), encoding="utf-8")
+
+    assert analyze_payload(payload, config)["reports"][0]["from_cache"] is False
+
+
+def test_solver_request_cannot_bypass_configuration_with_equity_cache(tmp_path: Path) -> None:
+    sample = Path("data/sample.txt").read_text(encoding="utf-8")
+    payload = {"filename": "hand.txt", "text": sample, "postflop": "equity"}
+    config = _config(tmp_path)
+    analyze_payload(payload, config)
+
+    with pytest.raises(ValueError, match="--solver-path"):
+        analyze_payload({**payload, "postflop": "solver"}, config)
 
 
 def test_analyze_data_payload_rejects_data_file_path_traversal(tmp_path: Path) -> None:

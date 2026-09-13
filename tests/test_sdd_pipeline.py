@@ -190,7 +190,11 @@ def test_preflop_chart_decision_carries_chart_detail():
     assert decision.suggestion.detail["action_profile"] == {"raise": 1.0}
     assert decision.suggestion.best_action == "raise"
     # explanation 帶 i18n key + 參數，供 Web 端依介面語言翻譯（字面統一英文供 CLI）
-    assert decision.explanation == "Matches current preflop_chart recommendation"
+    assert decision.explanation == (
+        "No heuristic penalty under current preflop_chart guidance; not measured solver EV"
+    )
+    assert decision.ev_loss_kind == "heuristic_severity"
+    assert decision.suggestion.detail["assessment_scope"] == "action_type_only"
     assert decision.explanation_key == "explain.aligned"
     assert decision.explanation_params == {"source": "preflop_chart"}
 
@@ -292,6 +296,7 @@ def test_solver_backend_calls_external_adapter_and_parses_strategy(tmp_path):
     assert suggestion.best_action == "call"
     assert suggestion.actions == (("call", 0.7), ("fold", 0.3))
     assert suggestion.source == "solver"
+    assert suggestion.detail["action_ev_available"] is False
 
 
 def test_solver_backend_requires_solver_path(monkeypatch):
@@ -358,6 +363,8 @@ def test_web_solver_payload_returns_decision_eval(tmp_path):
     assert decision_eval["suggestion"]["source"] == "solver"
     assert decision_eval["suggestion"]["best_action"] == "raise"
     assert decision_eval["tier"] == "mistake"
+    assert decision_eval["ev_loss_kind"] == "heuristic_severity"
+    assert "not measured solver EV" in decision_eval["explanation"]
 
 
 def test_web_solver_payload_persists_report(tmp_path):

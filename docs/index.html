@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="poker-hand-review grades Natural8 and GGPoker tournament hand histories from the Hero perspective, with GTO-style decision labels, leaks, replay, and opponent profiling."
+      content="poker-hand-review helps prioritize Natural8 and GGPoker tournament hand reviews with chart and equity guidance, severity estimates, replay, and opponent profiling."
     />
-    <title>poker-hand-review | GTO hand history review</title>
+    <title>poker-hand-review | Poker hand history review</title>
     <link rel="stylesheet" href="./landing.css" />
   </head>
   <body>
@@ -29,10 +29,10 @@
         <div class="hero-backdrop" aria-hidden="true"></div>
         <div class="hero-content">
           <p class="eyebrow">Natural8 / GGPoker tournament review</p>
-          <h1>Review poker hands like a chess engine.</h1>
+          <h1>Find poker hands worth a closer review.</h1>
           <p class="hero-copy">
-            Upload hand histories, isolate every Hero decision, and see which actions are fine,
-            inaccurate, or costly against GTO-informed strategy.
+            Load hand histories in the local app, isolate every Hero decision, and use chart
+            and equity guidance to choose which spots to study next.
           </p>
           <div class="hero-actions">
             <a class="primary-link" href="https://github.com/matthiola0/poker-hand-review">
@@ -57,6 +57,8 @@
             <p>
               Preflop decisions use range-chart lookup. Postflop decisions use fast equity and EV
               heuristics by default, with an optional external solver adapter for deeper review.
+              Grades express estimated severity, including with a solver: the current adapter
+              returns strategy frequencies, not action EV values.
             </p>
           </div>
         </div>
@@ -67,7 +69,7 @@
           <article class="feature-item">
             <span class="feature-number">01</span>
             <h3>Decision grading</h3>
-            <p>Every Hero action is labeled as good, inaccuracy, mistake, or unknown.</p>
+            <p>Color-coded severity estimates help prioritize review; uncovered spots remain unknown.</p>
           </article>
           <article class="feature-item">
             <span class="feature-number">02</span>
@@ -77,7 +79,7 @@
           <article class="feature-item">
             <span class="feature-number">03</span>
             <h3>Leak tracking</h3>
-            <p>Aggregate recurring mistakes by position, street, and EV-loss severity.</p>
+            <p>Group recurring review spots by position, street, and estimated severity.</p>
           </article>
           <article class="feature-item">
             <span class="feature-number">04</span>

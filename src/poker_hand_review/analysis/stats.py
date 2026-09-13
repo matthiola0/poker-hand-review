@@ -14,9 +14,9 @@ from ..models import ActionType, Hand, HandEval, QualityTier, Street
 @dataclass(frozen=True)
 class StatsReport:
     hands: int
-    # --- 在 DecisionEval 之上的 GTO 指標 ---
+    # --- 在 DecisionEval 之上的複盤指標（欄位名維持 JSON 相容） ---
     gto_accuracy: float            # GOOD 決策比例
-    ev_loss_per_100: float         # 每百手累計 EV 損失（BB）
+    ev_loss_per_100: float         # 每百手累計嚴重度估算（BB 尺度）
     mistakes: int                  # MISTAKE 決策數
     # --- 傳統指標 ---
     vpip: float

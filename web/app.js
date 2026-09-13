@@ -24,7 +24,7 @@ const LANG_STORAGE_KEY = "phr_lang";
 const I18N = {
   en: {
     "schema.noReport": "No report loaded",
-    honesty: "EV loss is an engine estimate, not solver EV.",
+    honesty: "Grades prioritize review. Severity is estimated, including with a solver.",
     "backend.title": "Postflop backend for .txt analysis",
     "lang.title": "Switch language",
     "chipUnit.title": "Toggle chip display units",
@@ -41,8 +41,8 @@ const I18N = {
     analyzeSelected: "Analyze selected",
     cancel: "Cancel",
     "metric.hands": "Hands",
-    "metric.accuracy": "GTO Accuracy",
-    "metric.evloss": "EV Loss / 100",
+    "metric.accuracy": "Low-severity rate",
+    "metric.evloss": "Est. severity / 100",
     "metric.netBb": "Net BB",
     "metric.netChips": "Net Chips",
     "units.chips": "Chips",
@@ -124,8 +124,12 @@ const I18N = {
     "explain.no_score": "Not enough info to grade",
     "explain.chart_uncovered": "Preflop chart does not cover this spot yet",
     "explain.no_street": "Street data not found",
-    "explain.aligned": "Matches current {source} recommendation",
-    "explain.deviate": "Recommend {action}; current action deviates by ~{ev_loss}bb",
+    "explain.aligned": "No heuristic penalty under current {source} guidance; not measured solver EV",
+    "explain.deviate": "Recommend {action}; severity estimate ~{ev_loss}bb, not measured solver EV",
+    "assessment.preflop": "Chart compares action types, including raise vs all-in; other bet sizes are not graded.",
+    "assessment.equity": "Equity heuristic recommendation; no GTO mixing frequency is calculated.",
+    "assessment.solver": "Solver strategy for the supplied model; action EVs are unavailable and severity remains estimated.",
+    "assessment.texassolver": "TexasSolver v1 assumes Hero in position, preset opponent ranges, and simplified sizing.",
     "explain.equity.aligned.req":
       "Estimated equity {eq} vs {req} required against {range} range; action aligns. Severity estimate {ev}bb; not exact solver EV.",
     "explain.equity.aligned.noreq":
@@ -140,7 +144,7 @@ const I18N = {
     "leak.pattern": "{street}: {action} vs recommended {best}",
     "delta.noChange": "no change",
     "delta.changed": "changed",
-    "delta.evLoss": "EV loss {ev}",
+    "delta.evLoss": "Estimated severity change {ev}",
     "badge.engine": "engine",
     "meta.net": "net {value}",
     "board.prefix": "board {cards}",
@@ -156,7 +160,7 @@ const I18N = {
     "opp.meta": "{n} hands · VPIP {vpip} · PFR {pfr}",
     "src.chart.title": "Preflop GTO range chart; no solver needed",
     "src.equity.title": "equity heuristic estimate",
-    "src.solver.title": "real GTO solver result",
+    "src.solver.title": "Solver strategy; no action EV values",
     "src.unknown.title": "insufficient info; not graded",
     "src.builtIn": "built-in",
     "src.solverChart": "solver chart",
@@ -170,7 +174,7 @@ const I18N = {
   },
   zh: {
     "schema.noReport": "尚未載入報告",
-    honesty: "EV 損失為引擎估計值，非 solver 實際 EV。",
+    honesty: "評分用來安排複盤優先順序；即使用 solver，嚴重度仍為估算。",
     "backend.title": "翻後分析使用的後端",
     "lang.title": "切換語言",
     "chipUnit.title": "切換籌碼顯示單位",
@@ -187,8 +191,8 @@ const I18N = {
     analyzeSelected: "分析所選",
     cancel: "取消",
     "metric.hands": "手牌數",
-    "metric.accuracy": "GTO 準確度",
-    "metric.evloss": "EV 損失 / 100",
+    "metric.accuracy": "低偏差比例",
+    "metric.evloss": "嚴重度估算 / 100",
     "metric.netBb": "淨 BB",
     "metric.netChips": "淨籌碼",
     "units.chips": "籌碼",
@@ -269,8 +273,12 @@ const I18N = {
     "explain.no_score": "資訊不足，暫不評分",
     "explain.chart_uncovered": "翻前圖表尚未涵蓋此情境",
     "explain.no_street": "找不到街段資料",
-    "explain.aligned": "符合目前 {source} 建議",
-    "explain.deviate": "建議 {action}；目前動作偏離約 {ev_loss}bb",
+    "explain.aligned": "依目前 {source} 建議未扣分；不代表已測得 solver EV",
+    "explain.deviate": "建議 {action}；嚴重度估算約 {ev_loss}bb，非 solver 實測 EV",
+    "assessment.preflop": "圖表比對動作種類，包含一般加注與全押；不評估其他下注尺寸。",
+    "assessment.equity": "Equity 啟發式建議；未計算 GTO 混合頻率。",
+    "assessment.solver": "Solver 解算的是輸入模型；目前未取得各動作 EV，嚴重度仍為估算。",
+    "assessment.texassolver": "TexasSolver v1 假設 Hero 有位置，使用預設對手範圍與簡化尺寸。",
     "explain.equity.aligned.req":
       "估計勝率 {eq}，需 {req}，對 {range} 範圍；動作一致。嚴重度估計 {ev}bb；非精確 solver EV。",
     "explain.equity.aligned.noreq":
@@ -285,7 +293,7 @@ const I18N = {
     "leak.pattern": "{street}：{action} vs 建議 {best}",
     "delta.noChange": "無變化",
     "delta.changed": "已變更",
-    "delta.evLoss": "EV 損失 {ev}",
+    "delta.evLoss": "嚴重度估算變化 {ev}",
     "badge.engine": "引擎",
     "meta.net": "淨 {value}",
     "board.prefix": "牌面 {cards}",
@@ -301,7 +309,7 @@ const I18N = {
     "opp.meta": "{n} 手 · VPIP {vpip} · PFR {pfr}",
     "src.chart.title": "翻前 GTO 範圍表，不需要 solver",
     "src.equity.title": "equity 啟發式估計",
-    "src.solver.title": "真實 GTO solver 解算",
+    "src.solver.title": "Solver 策略；未提供各動作 EV",
     "src.unknown.title": "資訊不足，未評分",
     "src.builtIn": "內建",
     "src.solverChart": "solver 表",
@@ -1301,6 +1309,7 @@ function renderDecisions(hand) {
           · ${escapeHtml(t("decision.toCall", { toCall: formatChips(pair.ctx.to_call || 0, hand) }))}
         </div>
         <div>${escapeHtml(explainText(pair.ev))}</div>
+        <div class="muted">${escapeHtml(assessmentNote(pair.ev))}</div>
         <div class="suggestions">${suggestionPills(pair.ev)}</div>
       </div>
     `;
@@ -1598,6 +1607,10 @@ function batchSummary(batch) {
 }
 
 function suggestionPills(ev) {
+  // Equity weights are handcrafted; do not present them as an equilibrium mix.
+  if (ev?.suggestion?.source === "equity_backend") {
+    return `<span class="pill unknown">${escapeHtml(ev.suggestion.best_action)}</span>`;
+  }
   const actions = ev?.suggestion?.actions || [];
   if (!actions.length) return "";
   return actions
@@ -1606,6 +1619,18 @@ function suggestionPills(ev) {
       return `<span class="pill unknown">${escapeHtml(action)} ${pctText}</span>`;
     })
     .join("");
+}
+
+function assessmentNote(ev) {
+  if (!ev || ev.tier === "unknown" || ev.ev_loss_kind === "unavailable") return "";
+  const key = {
+    preflop_chart: "assessment.preflop",
+    equity_backend: "assessment.equity",
+    solver: "assessment.solver",
+  }[ev.suggestion?.source];
+  const adapterNote = ev.suggestion?.detail?.adapter === "texassolver"
+    ? t("assessment.texassolver") : "";
+  return [key ? t(key) : "", adapterNote].filter(Boolean).join(" ");
 }
 
 function renderInsights() {

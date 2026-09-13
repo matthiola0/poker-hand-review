@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict
 import hashlib
 import json
+import os
 import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -23,6 +24,7 @@ from .evaluate.postflop import (
     get_backend,
 )
 from .evaluate.quality import QualityThresholds, tier_from_ev_loss
+from .gto import preflop_charts
 from .models import Action, ActionType, Card, DecisionEval, Street, parse_card
 from .parser import parse_hands, split_hands
 from .profile.opponent import build_profiles
@@ -34,6 +36,8 @@ _MAX_BODY_BYTES = 16 * 1024 * 1024  # 16 MiB
 # Loopback names always allowed for Host / Origin checks (the bound host is
 # added on top in WebServerConfig so a custom --host still works).
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1", ""})
+# Bump when parsing, enrichment, grading, or report semantics change.
+ANALYSIS_VERSION = "2"
 
 
 class WebServerConfig:
@@ -215,7 +219,7 @@ class N8ReviewHandler(BaseHTTPRequestHandler):
 def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dict[str, Any]:
     """逐檔分析上傳的 .txt 手牌歷史。
 
-    每個來源檔各自快取在 ``data/analyzed/`` 下；內容沒變就直接讀快取，
+    每個來源檔各自快取在 ``data/analyzed/`` 下；內容與分析設定沒變就讀快取，
     回傳 ``{"reports": [...]}`` 由前端 ``mergeReports`` 合併。
     """
     hero = str(payload.get("hero") or config.DEFAULT.hero)
@@ -223,21 +227,22 @@ def analyze_payload(payload: dict[str, Any], config_obj: WebServerConfig) -> dic
     refresh = bool(payload.get("refresh"))
     sources = _collect_sources(payload)
 
-    backend: PostflopBackend | None = None
+    # Validate the requested backend even when a cached report exists.
+    backend = _analyze_backend(postflop, config_obj)
+    analysis = _analysis_settings(postflop, config_obj)
     reports: list[dict[str, Any]] = []
     for filename, text in sources:
         cache_path = _cache_path(config_obj, filename)
-        source_hash = _source_hash(hero, text)
+        source_hash = _source_hash(hero, text, analysis)
         if not refresh:
             cached = _read_valid_cache(cache_path, source_hash)
             if cached is not None:
                 reports.append(cached)
                 continue
-        if backend is None:
-            backend = _analyze_backend(postflop, config_obj)
         report = _analyze_one(filename, text, hero, backend)
         if report is None:
             continue
+        report["analysis"] = analysis
         _write_cache(cache_path, report, source_hash)
         report["from_cache"] = False
         reports.append(report)
@@ -320,8 +325,52 @@ def _cache_path(config_obj: WebServerConfig, filename: str) -> Path:
     return _cache_dir(config_obj) / f"{safe}.json"
 
 
-def _source_hash(hero: str, text: str) -> str:
+def _analysis_settings(postflop: str, config_obj: WebServerConfig) -> dict[str, Any]:
+    """Record the inputs that can change a report, once per analysis request."""
+    charts = hashlib.sha256()
+    for path in sorted(preflop_charts.CHART_DIR.glob("*.json")):
+        charts.update(path.name.encode("utf-8"))
+        charts.update(b"\0")
+        charts.update(hashlib.sha256(path.read_bytes()).digest())
+    analysis: dict[str, Any] = {
+        "version": ANALYSIS_VERSION,
+        "schema": SCHEMA_VERSION,
+        "postflop": postflop,
+        "mc_samples": max(1, config.DEFAULT.mc_samples),
+        "thresholds": asdict(QualityThresholds()),
+        "charts_hash": charts.hexdigest(),
+    }
+    # Equity reports can contain saved per-decision solver refinements, too.
+    if config_obj.solver_path is not None:
+        analysis["solver"] = {
+            "adapter": _file_version(config_obj.solver_path),
+            "timeout_sec": config_obj.solver_timeout_sec,
+            "environment": {
+                name: os.getenv(name)
+                for name in (
+                    "PHR_SOLVER_THREADS", "PHR_SOLVER_ACCURACY", "PHR_SOLVER_MAX_ITER",
+                    "PHR_SOLVER_TIMEOUT", "TEXAS_SOLVER_CONSOLE",
+                )
+            },
+            "console": _file_version(Path(console))
+            if (console := os.getenv("TEXAS_SOLVER_CONSOLE")) else None,
+        }
+    return analysis
+
+
+def _file_version(path: Path) -> dict[str, Any]:
+    resolved = path.resolve()
+    version: dict[str, Any] = {"path": str(resolved)}
+    if resolved.is_file():
+        stat = resolved.stat()
+        version.update(size=stat.st_size, mtime_ns=stat.st_mtime_ns)
+    return version
+
+
+def _source_hash(hero: str, text: str, analysis: dict[str, Any]) -> str:
     digest = hashlib.sha256()
+    digest.update(json.dumps(analysis, sort_keys=True).encode("utf-8"))
+    digest.update(b"\0")
     digest.update(hero.encode("utf-8"))
     digest.update(b"\0")
     digest.update(text.encode("utf-8"))
@@ -339,7 +388,12 @@ def _read_valid_cache(cache_path: Path, source_hash: str) -> dict[str, Any] | No
     if not isinstance(data, dict):
         return None
     meta = data.get("_cache")
-    if not isinstance(meta, dict) or meta.get("source_hash") != source_hash:
+    if (
+        not isinstance(meta, dict)
+        or meta.get("source_hash") != source_hash
+        or meta.get("schema") != SCHEMA_VERSION
+        or data.get("schema") != SCHEMA_VERSION
+    ):
         return None
     data.pop("_cache", None)
     data["from_cache"] = True
@@ -415,7 +469,9 @@ def _analyze_backend(postflop: str, config_obj: WebServerConfig) -> PostflopBack
         path = str(config_obj.solver_path)
         if not Path(path).exists():
             raise ValueError(f"找不到 solver adapter: {path}")
-        return get_backend("solver", solver_path=path)
+        return get_backend(
+            "solver", solver_path=path, timeout_sec=config_obj.solver_timeout_sec
+        )
     raise ValueError("postflop 必須是 equity|solver")
 
 

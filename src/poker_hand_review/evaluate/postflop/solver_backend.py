@@ -87,7 +87,16 @@ class SolverBackend:
             raise SolverBackendError("solver stdout 不是合法 JSON") from exc
 
         actions, best_action = _parse_strategy(strategy)
-        return GtoSuggestion(actions=actions, best_action=best_action, source="solver")
+        return GtoSuggestion(
+            actions=actions,
+            best_action=best_action,
+            source="solver",
+            detail={
+                "strategy_kind": "solver_strategy",
+                "action_ev_available": False,
+                "adapter": str(strategy.get("source_detail", "")),
+            },
+        )
 
 
 def _node_payload(node: PostflopNode) -> dict[str, Any]:
