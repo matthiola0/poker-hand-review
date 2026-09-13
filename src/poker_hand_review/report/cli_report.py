@@ -35,9 +35,13 @@ def print_hand_review(hand: Hand, ev: HandEval) -> None:
     for d in ev.decisions:
         line = Text("  ")
         line.append("●", style=d.color)
+        severity = (
+            "未評分" if d.tier == QualityTier.UNKNOWN or d.ev_loss_kind == "unavailable"
+            else f"嚴重度估算 {d.ev_loss_bb:.2f}bb"
+        )
         line.append(
             f" {d.street.value:<7} {d.hero_action.type.value:<6} "
-            f"EV損失 {d.ev_loss_bb:+.2f}bb  → {d.suggestion.best_action}  {d.explanation}"
+            f"{severity}  → {d.suggestion.best_action}  {d.explanation}"
         )
         console.print(line)
 
@@ -53,13 +57,13 @@ def print_legend() -> None:
 
 
 def print_stats(report: StatsReport) -> None:
-    """印 StatsReport（GTO 準確率 / EV 損失 / 傳統指標）。"""
+    """印 StatsReport（低偏差比例 / 嚴重度估算 / 傳統指標）。"""
     table = Table(title="統計報表")
     table.add_column("指標")
     table.add_column("值", justify="right")
     table.add_row("總手數", str(report.hands))
-    table.add_row("GTO 準確率", _pct(report.gto_accuracy))
-    table.add_row("EV 損失 / 100手", f"{report.ev_loss_per_100:.2f}bb")
+    table.add_row("低偏差比例", _pct(report.gto_accuracy))
+    table.add_row("嚴重度估算 / 100手", f"{report.ev_loss_per_100:.2f}bb")
     table.add_row("Mistake 決策", str(report.mistakes))
     table.add_row("VPIP", _pct(report.vpip))
     table.add_row("PFR", _pct(report.pfr))
@@ -81,14 +85,14 @@ def print_stats(report: StatsReport) -> None:
 
 
 def print_leaks(leaks: list[Leak]) -> None:
-    """依累計 EV 損失列出漏洞 Top-N。"""
+    """依累計嚴重度估算列出漏洞 Top-N。"""
     if not leaks:
         console.print("沒有累積的黃/紅漏洞。")
         return
     table = Table(title="漏洞 Top-N")
     table.add_column("模式")
     table.add_column("次數", justify="right")
-    table.add_column("累計 EV 損失", justify="right")
+    table.add_column("累計嚴重度估算", justify="right")
     table.add_column("例手")
     for leak in leaks[:10]:
         table.add_row(

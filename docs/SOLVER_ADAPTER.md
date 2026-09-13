@@ -56,6 +56,13 @@ Also accepted:
 
 If `best_action` is omitted, poker-hand-review uses the highest-frequency action.
 
+This contract supplies strategy frequencies, not action EV values. The backend
+marks `action_ev_available: false`; downstream `ev_loss_bb` remains a heuristic
+severity estimate (`ev_loss_kind: "heuristic_severity"`). An action with positive
+solver frequency receives no heuristic penalty, including below 5%. That does
+not establish equal action EVs or an exact zero EV loss. Unsupported actions
+receive a heuristic penalty rather than a measured solver EV difference.
+
 ## CLI
 
 ```powershell

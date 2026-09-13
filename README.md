@@ -14,13 +14,13 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="license MIT">
 </p>
 
-> Review your poker hands like a chess engine — hand by hand, decision by decision, with every move graded against GTO.
+> Review your poker hands decision by decision, with chart and equity guidance to prioritize spots worth studying.
 
 <p align="center">
   <b>Free</b> · <b>Offline</b> · <b>Private — your hands never leave your machine</b> · built for <b>GGPoker / Natural8</b> tournaments
 </p>
 
-**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, grades each decision against GTO and colors it 🟢 fine / 🟡 inaccuracy / 🔴 mistake — with the recommended action and the reasoning behind it. Unlike cloud trainers, it runs entirely on **your machine** against **your real hands**, for free. After one session you know exactly which hands you misplayed, where, and how you should have played them.
+**poker-hand-review** reads hand histories exported from Natural8 / GGPoker tournaments and, from **your own (Hero) perspective**, compares decisions with preflop charts and postflop estimates. It colors decisions 🟢 low concern / 🟡 review / 🔴 priority review, with suggested actions and reasons. It runs on **your machine** against **your real hands**, for free, and helps you choose which spots to study further.
 
 <p align="center">
   <img src="docs/screenshots/demo.gif" alt="poker-hand-review Web UI — hand replay demo" width="860">
@@ -70,8 +70,8 @@ poker-hand-review web                          # visit the printed URL, click "L
 
 poker-hand-review turns a folder of raw hand-history `.txt` files into a graded, navigable review — the way a chess engine annotates a game move by move.
 
-- **Per-decision GTO grading.** Every Hero decision point is isolated and colored by how much EV it loses versus GTO, so mistakes stand out at a glance.
-- **Statistics.** GTO accuracy, EV loss per 100 hands, VPIP / PFR / 3Bet / C-bet, and net result by position.
+- **Per-decision review.** Every Hero decision point is isolated and colored by estimated severity to prioritize review.
+- **Statistics.** Low-severity decision rate, estimated severity per 100 hands, VPIP / PFR / 3Bet / C-bet, and net result by position.
 - **Opponent profiling.** Aggregates recurring opponents' tendencies, suggests exploits, and feeds the assumed ranges back into postflop equity.
 - **Interactive Web UI.** Replay any hand street by street, filter by position / street / result, and drill into leaks and opponent profiles.
 - **Pluggable postflop engine.** A fast equity/EV estimate by default; attach an external CFR solver for a true deep-solve on the hands that matter.
@@ -118,7 +118,7 @@ poker-hand-review can be driven entirely from the browser or from the command li
 | Best for | reviewing a single file | batch-analyzing a folder |
 | Input per run | one `.txt` | an entire folder of `.txt` |
 | Terminal review | — | yes |
-| Writes `report.json` | no | yes (reloadable later) |
+| Saved output | per-file cache in `data/analyzed/` | `report.json` (reloadable later) |
 
 **Browser** — analyze on upload, no separate `analyze` step:
 
@@ -126,7 +126,9 @@ poker-hand-review can be driven entirely from the browser or from the command li
 poker-hand-review web
 ```
 
-Open the printed URL (default <http://127.0.0.1:8765/>), click **Load txt / json**, and select a `.txt`. The local server parses and grades it on the spot, then renders the review; nothing is written to disk. The backend dropdown (**Equity** / **Solver**) and solver-path field control how postflop spots are graded.
+Open the printed URL (default <http://127.0.0.1:8765/>), click **Load txt / json**, and select a `.txt`. The local server parses and grades it, renders the review, and saves a per-file JSON cache under `data/analyzed/`. The backend dropdown (**Equity** / **Solver**) selects postflop guidance; the solver path must be set when starting the server with `--solver-path`.
+
+Caches are reused only when source text, Hero, backend, analysis version, chart contents, and analysis settings match. Relevant solver settings and adapter file changes also invalidate them. Old cache formats are rebuilt on the next analysis; `refresh` forces rebuilding. The report's `analysis` metadata records the settings used for its initial analysis; individual decisions identify any saved solver refinements.
 
 **Command line** — analyze a folder up front, then open the report:
 
@@ -203,7 +205,7 @@ A quick visual tour of the Web UI. The demo above shows the full interface in mo
 </tr>
 <tr valign="top">
 <td width="33%" align="center"><b>Hand list</b><br><sub>Per hand: ID / cards / position / net, color-coded by worst mistake</sub></td>
-<td width="33%" align="center"><b>Leaks</b><br><sub>Recurring mistakes: count, cumulative EV loss, hands involved</sub></td>
+<td width="33%" align="center"><b>Leaks</b><br><sub>Recurring review spots: count, cumulative severity estimate, hands involved</sub></td>
 <td width="33%" align="center"><b>Net by position</b><br><sub>Win / loss per position — which seat is leaking</sub></td>
 </tr>
 <tr valign="top">
@@ -223,13 +225,13 @@ A quick visual tour of the Web UI. The demo above shows the full interface in mo
                                          └ postflop: equity estimate (default) or CFR solver (optional)
 ```
 
-- **Preflop** matches precomputed **8-max MTT** GTO range charts (per-position open / 3bet / call, plus short-stack push/fold). Charts carry full four-action frequencies (raise / all-in / call / fold), so a mixed strategy is graded as such — any action the chart plays with ≥5% frequency is accepted. True GTO, offline, and fast.
-- **Postflop** computes equity versus the opponent's assumed range and applies EV heuristics to reliably flag obvious mistakes. Attach an external adapter to replace those heuristics with a real solver on the hands you care about.
+- **Preflop** matches precomputed **8-max MTT** charts with four action frequencies (raise / all-in / call / fold). Raise and all-in are assessed separately. The ≥5% acceptance threshold is a grading heuristic, not an action EV calculation. Chart stack buckets and position mappings approximate the actual spot; bet sizes beyond the raise/all-in distinction are not graded.
+- **Postflop** estimates equity against an assumed opponent range and uses it to prioritize review. The equity backend's weights are heuristic recommendations, not GTO mixing frequencies. An external adapter can supply a solver strategy for its modeled situation; the supplied TexasSolver adapter assumes Hero in position, preset opponent ranges, and simplified sizing (see its documented limitations).
 
 The solver adapter is an external process that speaks a documented JSON contract — see [`docs/SOLVER_ADAPTER.md`](docs/SOLVER_ADAPTER.md).
 
 > [!WARNING]
-> Without a solver, `ev_loss_bb` is an engine **estimate** from chart / equity heuristics. Treat it as **severity guidance**, not exact solver EV. For precise numbers, re-run the hand with `--postflop solver` and a solver adapter.
+> `ev_loss_bb` retains its name for JSON compatibility, but represents **heuristic severity**, including when using a solver. The current adapter contract returns strategy frequencies, not action EVs. `ev_loss_kind` is `heuristic_severity` for graded decisions and `unavailable` for ungraded ones. Zero means no heuristic penalty, not measured zero EV loss. `gto_accuracy` is the fraction of graded decisions in the green tier; `ev_loss_per_100` aggregates severity estimates.
 
 ---
 
@@ -254,7 +256,7 @@ poker-hand-review ships with an adapter for [TexasSolver](https://github.com/bup
    poker-hand-review hand ".\data\xxx.txt" --id TM123 --postflop solver --solver-path .\validation\texassolver.cmd
    ```
 
-To enable the solver inside the Web UI instead, start the server with `--solver-path`, or pick **Solver** and fill in the path field when loading a `.txt`.
+To enable the solver inside the Web UI, start the server with `--solver-path`, then pick **Solver** when loading a `.txt` or run a solver review on an individual decision.
 
 </details>
 

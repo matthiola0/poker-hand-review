@@ -55,13 +55,15 @@ def test_equity_backend_exposes_structured_diagnostics(monkeypatch):
     assert suggestion.detail["mc_samples_requested"] == 777
     assert suggestion.detail["samples_evaluated"] == 777
     assert suggestion.detail["estimate_kind"] == "heuristic_severity_not_solver_ev"
+    assert suggestion.detail["strategy_kind"] == "heuristic_recommendation"
 
 
 @pytest.mark.parametrize(
     ("equity", "expected"),
     [
         (0.60, "call"),
-        (0.28, "call"),
+        (0.29, "call"),
+        (0.28, "fold"),
         (0.10, "fold"),
     ],
 )
@@ -175,15 +177,39 @@ def test_equity_explanation_labels_severity_as_non_solver_estimate(monkeypatch):
     assert params["range"] == "tight"
 
 
+@pytest.mark.parametrize(
+    ("equity", "action", "to_call", "expected_loss"),
+    [
+        (0.40, ActionType.FOLD, 40, 0.8),
+        (0.28, ActionType.CALL, 40, 0.04),
+        (0.72, ActionType.CHECK, 0, 0.85),
+    ],
+)
+def test_heuristic_frequencies_do_not_override_equity_loss(
+    monkeypatch, equity, action, to_call, expected_loss
+):
+    monkeypatch.setattr(
+        "poker_hand_review.evaluate.postflop.equity_backend.equity_vs_range",
+        lambda *args, **kwargs: EquityResult(
+            win=equity, tie=0.0, lose=1 - equity, samples=1, exact=False
+        ),
+    )
+    suggestion = EquityBackend(mc_samples=1).evaluate(_node(to_call=to_call))
+
+    loss = _postflop_ev_loss(_decision(action, to_call=to_call), suggestion, 20)
+
+    assert loss == pytest.approx(expected_loss)
+
+
 def _solver_suggestion(actions: tuple[tuple[str, float], ...], best: str) -> GtoSuggestion:
     return GtoSuggestion(actions=actions, best_action=best, source="solver")
 
 
-def test_postflop_low_frequency_action_is_not_a_free_pass() -> None:
-    # Solver plays raise 97% / call 3%. Calling (a 3% action) is below the mix
-    # tolerance and is not the best action, so it must register EV loss.
+def test_postflop_solver_frequency_alone_does_not_establish_ev_loss() -> None:
+    # A low-frequency action can belong to the strategy. Its frequency alone
+    # cannot establish a positive EV loss without action values.
     suggestion = _solver_suggestion((("raise", 0.97), ("call", 0.03)), "raise")
-    assert _postflop_ev_loss(_decision(ActionType.CALL), suggestion, 20) > 0.0
+    assert _postflop_ev_loss(_decision(ActionType.CALL), suggestion, 20) == 0.0
 
 
 def test_postflop_real_mixed_action_is_accepted() -> None:

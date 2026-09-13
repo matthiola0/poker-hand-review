@@ -47,6 +47,7 @@ class EquityBackend:
             "mc_samples_requested": max(1, self.mc_samples),
             "samples_evaluated": result.samples,
             "estimate_kind": "heuristic_severity_not_solver_ev",
+            "strategy_kind": "heuristic_recommendation",
         }
         actions: tuple[tuple[str, float], ...]
 
@@ -58,7 +59,7 @@ class EquityBackend:
             elif equity >= required + 0.03:
                 actions = (("call", 0.90), ("fold", 0.10))
                 best = "call"
-            elif equity >= required - 0.02:
+            elif equity >= required:
                 actions = (("call", 0.60), ("fold", 0.40))
                 best = "call"
             else:

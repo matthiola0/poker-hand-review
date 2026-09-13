@@ -1,4 +1,4 @@
-"""決策評分核心：對每個 Hero 決策算 GTO 建議與 EV 損失，定 tier/顏色。
+"""決策評分核心：對每個 Hero 決策提供建議與嚴重度估算，定 tier/顏色。
 
 翻前查 GTO 範圍表；翻後委派注入的 PostflopBackend。Evaluator 不知道
 背後是 equity 還是 solver——後端隱於介面之後，可切換、可測試。
@@ -83,6 +83,7 @@ class DecisionEvaluator:
                 "effective_stack_bb": round(ctx.eff_stack_bb, 1),
                 "hand_frequency": freq,
                 "action_profile": profile,
+                "assessment_scope": "action_type_only",
             },
         )
         tier = tier_from_ev_loss(ev_loss, self.thresholds)
@@ -142,6 +143,7 @@ def _unknown(hand: Hand, decision: Decision, reason: str, key: str = "") -> Deci
         hero_action=decision.hero_action,
         suggestion=GtoSuggestion(actions=(("unknown", 1.0),), best_action="unknown", source="unknown"),
         ev_loss_bb=0.0,
+        ev_loss_kind="unavailable",
         tier=QualityTier.UNKNOWN,
         explanation=reason,
         explanation_key=key,
@@ -192,7 +194,7 @@ def _preflop_ev_loss(decision: Decision, best: str, freq: float, eff_stack_bb: f
 
 # ---- 四動作（raise/allin/call/fold）chart 評分 ----
 
-# 任何頻率 >= 此值的動作，視為 GTO 混合策略的一部分（可接受、不扣分）。
+# 翻前圖表的啟發式容忍門檻；不是從動作 EV 推導的差距。
 _MIX_TOLERANCE = 0.05
 
 
@@ -227,10 +229,8 @@ def _profile_actions(profile: dict[str, float]) -> tuple[tuple[str, float], ...]
 
 
 def _hero_profile_freq(decision: Decision, profile: dict[str, float]) -> float:
-    """Hero 動作在 chart 中的頻率（raise/allin 合併為積極；check 視同未投入）。"""
+    """Hero 動作在 chart 中的頻率；一般加注與全押分開，check 視同未投入。"""
     hero = _hero_chart_action(decision)
-    if hero in {"raise", "allin"}:
-        return _aggro(profile)
     if hero == "check":
         return profile.get("fold", 0.0)
     return profile.get(hero, 0.0)
@@ -257,12 +257,8 @@ def _preflop_ev_loss_profile(
 
 def _postflop_ev_loss(decision: Decision, suggestion: GtoSuggestion, bb: int) -> float:
     hero = decision.hero_action.type.value
-    # An action only counts as "fine" if it's part of the GTO mix with real
-    # frequency. A 1% solver action is not a free pass; let it fall through to
-    # the EV heuristics below (mirrors the preflop mix tolerance).
-    suggested = {action for action, freq in suggestion.actions if freq >= _MIX_TOLERANCE}
-    if hero in suggested or hero == suggestion.best_action:
-        return 0.0
+    # Equity-backend weights are heuristic recommendations, not a solver mix.
+    # Assess the equity edge before considering a matching recommendation.
     equity = _detail_float(suggestion, "estimated_equity")
     required = _detail_float(suggestion, "required_equity")
     if suggestion.source == "equity_backend" and equity is not None:
@@ -298,6 +294,13 @@ def _postflop_ev_loss(decision: Decision, suggestion: GtoSuggestion, bb: int) ->
         if hero == "check" and suggestion.best_action == "bet":
             opportunity_bb = decision.pot_before / max(bb, 1)
             return min(5.0, max(0.5, opportunity_bb * max(0.0, equity - 0.55)))
+    if suggestion.source == "solver":
+        # Frequency alone cannot establish EV loss for an action in the strategy.
+        # Zero here means no heuristic penalty, not measured equality of action EVs.
+        if any(action == hero and freq > 0 for action, freq in suggestion.actions):
+            return 0.0
+    elif hero == suggestion.best_action:
+        return 0.0
     if decision.to_call:
         return min(3.0, max(0.5, decision.to_call / max(bb, 1) * 0.75))
     return 0.8
@@ -320,14 +323,14 @@ def _explain(
         if suggestion.source == "equity_backend":
             return _explain_equity(suggestion, aligned=True, ev_loss=ev_loss)
         return (
-            f"Matches current {suggestion.source} recommendation",
+            f"No heuristic penalty under current {suggestion.source} guidance; not measured solver EV",
             "explain.aligned",
             {"source": suggestion.source},
         )
     if suggestion.source == "equity_backend":
         return _explain_equity(suggestion, aligned=False, ev_loss=ev_loss)
     return (
-        f"Recommend {suggestion.best_action}; current action deviates by ~{ev_loss:.2f}bb",
+        f"Recommend {suggestion.best_action}; severity estimate ~{ev_loss:.2f}bb, not measured solver EV",
         "explain.deviate",
         {"action": suggestion.best_action, "ev_loss": f"{ev_loss:.2f}"},
     )
